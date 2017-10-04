@@ -8,10 +8,14 @@ let orderby = require('lodash.orderby');
  * TODO - planned features:
  * - Snap/Align to vertical cursor line
  * - Sort by column.  Determined by vertical cursor line
- * - Multi column sort.  Can we determine cursor selection order?
  * - Sort.  Determined by selection
  * - Filter all lines of file to a new editor window
- * - Live realtime filtering view
+ * - Filter within selection
+ * - unique lines
+ * - trim lines
+ * - reverse lines
+ * - split/join lines using token or expression
+ * - Live realtime filtering view. click on filtered lines to jump to location.  Line numbers with filtered content
  * - Power selections
  *  - all lines containing...
  *  - remove selections containing...
@@ -31,13 +35,12 @@ export function activate(context: vscode.ExtensionContext) {
     });
     context.subscriptions.push(disposable);
 
-    vscode.commands.registerCommand('dakara-transformer.sortLinesByColumn', () => {
+    disposable = vscode.commands.registerCommand('dakara-transformer.filter', () => {
         const textEditor = vscode.window.activeTextEditor;
-        const selections = textEditor.selections;
-        transforms.sortLinesByColumn(textEditor, selections);
+        const selection = textEditor.selection;
+        transforms.filterLinesToNewDocument(textEditor, selection);
     });
     context.subscriptions.push(disposable);
-
 }
 
 export function deactivate() {

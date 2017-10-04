@@ -1,36 +1,78 @@
 'use strict';
 import * as vscode from 'vscode';
+import * as edit from 'vscode-extension-common'
 
 let orderby = require('lodash.orderby');
 
 interface lineInfo {
     line: vscode.TextLine;
-    cursorIndex: number;
-    cursorText: string;
+    range: vscode.Range;
 }
 
 export function sortLines(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
-    const lines = linesFromRanges(textEditor.document, ranges);
+    if (ranges.length === 1) sortLinesWithinRange(textEditor, ranges[0]);
+    else sortLinesByColumn(textEditor, ranges);
+}
+
+export function filterLinesToNewDocument(textEditor: vscode.TextEditor, selection:vscode.Selection) {
+    const selectedText = edit.textOfSelectionOrWordAtCursor(textEditor.document, selection);
+    
+    vscode.window.showInputBox({value: selectedText, prompt: 'Enter filter text'})
+    .then(filter => {
+        const filteredLines = filterLines(textEditor, filter);
+        const content = filteredLines.map(line => line.text).reduce((prev, curr) => prev + "\n" + curr);
+            vscode.workspace.openTextDocument({ 'language': textEditor.document.languageId, 'content': content })
+                .then(document => {
+                    vscode.window.showTextDocument(document, vscode.ViewColumn.Two, false);
+                }
+            );
+        });
+}
+
+function filterLines(textEditor: vscode.TextEditor, filter:string) {
+    const filteredLines:Array<vscode.TextLine> = [];
+    const totalLines = textEditor.document.lineCount;
+    for(let lineIndex = 0; lineIndex < totalLines; lineIndex++) {
+        const line = textEditor.document.lineAt(lineIndex);
+        if (line.text.indexOf(filter) > -1) {
+            filteredLines.push(line);
+        }
+    }
+    return filteredLines;
+}
+
+function sortLinesWithinRange(textEditor: vscode.TextEditor, range: vscode.Range) {
+    const lines = linesFromRange(textEditor.document, range);
     const sortedLines = orderby(lines, ['text']);
 
     replaceLines(textEditor, lines, sortedLines);
 }
 
-export function sortLinesByColumn(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
+function sortLinesByColumn(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
     const lines = makeLineInfos(textEditor, ranges);
     
-    const sortedLines = orderby(lines, [line => line.cursorText]);
+    const sortedLines = orderby(lines, [line => rangeOrCursorText(line.line.text, line.range)]);
 
     replaceLines(textEditor, lines.map(line => line.line), sortedLines.map(line => line.line));
-    // TODO move cursors to new line positions
+    const updatedRanges = makeRangesFromCombined(textEditor, lines.map(line => line.range), sortedLines.map(line => line.range));
+    textEditor.selections = updatedRanges.map(range => new vscode.Selection(range.start, range.end));
 }
+
+
+
+function rangeOrCursorText(text: string, range: vscode.Range) {
+    if (range.isSingleLine && range.start.character === range.end.character)
+        // select to end of line if range does not span characters
+        return text.substring(range.start.character, text.length);
+    return text.substring(range.start.character, range.end.character);
+} 
 
 function makeLineInfos(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
     const lineAndCursors: Map<number, lineInfo> = new Map();
     for(const range of ranges) {
         const line = textEditor.document.lineAt(range.start.line);
         let lineAndCursor = lineAndCursors.get(line.lineNumber);
-        if (!lineAndCursor) lineAndCursor = {line:line, cursorIndex: range.start.character, cursorText: line.text.substring(range.start.character, line.text.length)};
+        if (!lineAndCursor) lineAndCursor = {line, range};
 
         lineAndCursors.set(line.lineNumber, lineAndCursor);
     }
@@ -66,6 +108,18 @@ function replaceLines(textEditor: vscode.TextEditor, linesOld: Array<vscode.Text
             lineIndex++;
         });
     })
+}
+
+function makeRangesFromCombined(textEditor: vscode.TextEditor, rangesLinesSource: Array<vscode.Range>, rangesCharPosSource: Array<vscode.Range>) {
+    const newRanges = [];
+    let lineIndex = 0;
+    rangesLinesSource.forEach(rangeLineSource => {
+        const ranchCharSource = rangesCharPosSource[lineIndex];
+        newRanges.push(new vscode.Range(new vscode.Position(rangeLineSource.start.line, ranchCharSource.start.character), new vscode.Position(rangeLineSource.end.line, ranchCharSource.end.character)));
+        lineIndex++;
+    });
+
+    return newRanges;
 }
 
 function collectLines(document: vscode.TextDocument, startLine: number, endLine: number): Array<vscode.TextLine> {

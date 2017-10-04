@@ -6,7 +6,7 @@
     "repository": {
         "type": "git",
         "url": "https://github.com/dakaraphi/vscode-extension-transformer"
-    },     
+    },
     "publisher": "dakara",
     "engines": {
         "vscode": "^1.16.0"
@@ -16,15 +16,19 @@
     ],
     "activationEvents": [
         "onCommand:dakara-transformer.sortLines",
-        "onCommand:dakara-transformer.sortLinesByColumn",
         "onCommand:dakara-transformer.filter"
     ],
     "main": "./out/src/extension",
     "contributes": {
         "commands": [
-            {"command": "dakara-transformer.sortLines",            "title": "Transform: sort lines"}, 
-            {"command": "dakara-transformer.sortLinesByColumn",    "title": "Transform: sort lines by column"},
-            {"command": "dakara-transformer.filter",               "title": "Transform: filter lines to new document"}
+            {
+                "command": "dakara-transformer.sortLines",
+                "title": "Transform: Sort Lines"
+            },
+            {
+                "command": "dakara-transformer.filter",
+                "title": "Transform: Filter Lines As New Document"
+            }
         ]
     },
     "scripts": {
@@ -41,6 +45,7 @@
         "@types/mocha": "^2.2.32"
     },
     "dependencies": {
-        "lodash.orderby": "^4.6.0"
+        "lodash.orderby": "^4.6.0",
+        "vscode-extension-common": "^1.1.0"
     }
 }
