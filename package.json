@@ -16,18 +16,32 @@
     ],
     "activationEvents": [
         "onCommand:dakara-transformer.sortLines",
-        "onCommand:dakara-transformer.filter"
+        "onCommand:dakara-transformer.filter",
+        "onCommand:dakara-transformer.align",
+        "onCommand:dakara-transformer.commands"
     ],
     "main": "./out/src/extension",
     "contributes": {
         "commands": [
             {
                 "command": "dakara-transformer.sortLines",
-                "title": "Transform: Sort Lines"
+                "title": "Sort Lines",
+                "category": "Transform"
             },
             {
                 "command": "dakara-transformer.filter",
-                "title": "Transform: Filter Lines As New Document"
+                "title": "Filter Lines As New Document",
+                "category": "Transform"
+            },
+            {
+                "command": "dakara-transformer.align",
+                "title": "Align",
+                "category": "Transform"
+            },
+            {
+                "command": "dakara-transformer.commands",
+                "title": "List all commands",
+                "category": "Transform"
             }
         ]
     },
@@ -45,7 +59,6 @@
         "@types/mocha": "^2.2.32"
     },
     "dependencies": {
-        "lodash.orderby": "^4.6.0",
         "vscode-extension-common": "^1.1.0"
     }
 }
