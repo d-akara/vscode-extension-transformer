@@ -1,19 +1,18 @@
 'use strict';
 import * as vscode from 'vscode';
 import * as transforms from './Transforms';
-
-let orderby = require('lodash.orderby');
+import * as edit from 'vscode-extension-common'
 
 /**
  * TODO - planned features:
  * - Snap/Align to vertical cursor line
- * - Sort by column.  Determined by vertical cursor line
- * - Sort.  Determined by selection
  * - Filter all lines of file to a new editor window
  * - Filter within selection
  * - unique lines
+ * - unique lines containing filter
  * - trim lines
  * - reverse lines
+ * - sort folding regions
  * - split/join lines using token or expression
  * - Live realtime filtering view. click on filtered lines to jump to location.  Line numbers with filtered content
  * - Power selections
@@ -21,14 +20,28 @@ let orderby = require('lodash.orderby');
  *  - remove selections containing...
  *  - all lines with same level
  *  - copy selections to new editor
- * - snippet transormation
- * 
- * @param context 
+ * - snippet transformation
+ * - scrapbook transformations
  */
 
-export function activate(context: vscode.ExtensionContext) {
+interface LinkedDocument {
+    source: vscode.TextDocument;
+    target: vscode.TextDocument;
+} 
 
-    let disposable = vscode.commands.registerCommand('dakara-transformer.sortLines', () => {
+export function activate(context: vscode.ExtensionContext) {
+    const linkedDocuments= new Array<LinkedDocument>();
+
+    let disposable = vscode.languages.registerDefinitionProvider({scheme: 'untitled'}, {
+        provideDefinition(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken) {
+            const linkedDocument = linkedDocuments.find(linkedDocument => linkedDocument.target == linkedDocument.target);
+            //vscode.window.showTextDocument(linkedDocument.source.uri);
+            return new vscode.Location(linkedDocument.source.uri,  position);
+        }
+    }); 
+    context.subscriptions.push(disposable);
+
+    disposable = vscode.commands.registerCommand('dakara-transformer.sortLines', () => {
         const textEditor = vscode.window.activeTextEditor;
         const selections = textEditor.selections;
         transforms.sortLines(textEditor, selections);
@@ -38,7 +51,24 @@ export function activate(context: vscode.ExtensionContext) {
     disposable = vscode.commands.registerCommand('dakara-transformer.filter', () => {
         const textEditor = vscode.window.activeTextEditor;
         const selection = textEditor.selection;
-        transforms.filterLinesToNewDocument(textEditor, selection);
+        transforms.filterLinesToNewDocument(textEditor, selection)
+            .then(untitledDocument => linkedDocuments.push({source:textEditor.document, target:untitledDocument.document}));
+    });
+    context.subscriptions.push(disposable);
+
+    disposable = vscode.commands.registerCommand('dakara-transformer.align', () => {
+        const textEditor = vscode.window.activeTextEditor;
+        const selections = textEditor.selections;
+        transforms.alignColumns(textEditor, selections);
+    });
+    context.subscriptions.push(disposable);
+
+    disposable = vscode.commands.registerCommand('dakara-transformer.commands', () => {
+        const textEditor = vscode.window.activeTextEditor;
+        const commands = vscode.commands.getCommands().then(commandList => {
+            const content = commandList.reduce((prev, curr) => prev + '\n' + curr);
+            return edit.openDocumentWith(content);
+        })
     });
     context.subscriptions.push(disposable);
 }
