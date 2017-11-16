@@ -13,8 +13,10 @@ import * as edit from 'vscode-extension-common'
  * - trim lines
  * - reverse lines
  * - sort folding regions
+ * - sort lines by length
  * - split/join lines using token or expression
  * - Live realtime filtering view. click on filtered lines to jump to location.  Line numbers with filtered content
+ *  - combined live filter from all open documents.
  * - Power selections
  *  - all lines containing...
  *  - remove selections containing...
@@ -31,7 +33,6 @@ interface LinkedDocument {
 
 export function activate(context: vscode.ExtensionContext) {
     const linkedDocuments= new Array<LinkedDocument>();
-
     let disposable = vscode.languages.registerDefinitionProvider({scheme: 'untitled'}, {
         provideDefinition(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken) {
             const linkedDocument = linkedDocuments.find(linkedDocument => linkedDocument.target == linkedDocument.target);
