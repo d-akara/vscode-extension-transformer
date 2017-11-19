@@ -5,7 +5,7 @@ import * as edit from 'vscode-extension-common'
 const gutterDecorationType = vscode.window.createTextEditorDecorationType({
     rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed
 });
-
+const timer = 3;
 export function sortLines(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
     if (ranges.length === 1) edit.sortLinesWithinRange(textEditor, edit.expandRangeToBlockIfEmpty(textEditor, ranges[0]));
     else edit.sortLinesByColumn(textEditor, ranges);
