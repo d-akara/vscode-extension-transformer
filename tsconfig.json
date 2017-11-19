@@ -4,6 +4,10 @@
         "target": "es2015",
         "outDir": "out",
         "sourceMap": true,
-        "rootDir": "./src"
+        "rootDir": "./src",
+        "baseUrl": "",
+        "paths": {
+            "vscode": ["node_modules/vscode"]
+        }
     }
 }

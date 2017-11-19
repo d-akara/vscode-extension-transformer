@@ -2,7 +2,6 @@
 import * as vscode from 'vscode';
 import * as transforms from './Transforms';
 import * as edit from 'vscode-extension-common'
-
 /**
  * TODO - planned features:
  * - Snap/Align to vertical cursor line
