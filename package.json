@@ -52,13 +52,13 @@
         "test": "node ./node_modules/vscode/bin/test"
     },
     "devDependencies": {
-        "typescript": "^2.5.3",
-        "vscode": "^1.5.0",
-        "mocha": "^2.3.3",
+        "@types/mocha": "^2.2.32",
         "@types/node": "^6.0.40",
-        "@types/mocha": "^2.2.32"
+        "mocha": "^2.3.3",
+        "typescript": "^2.7.0-dev.20171118",
+        "vscode": "^1.1.7"
     },
     "dependencies": {
-        "vscode-extension-common": "^1.1.0"
+        "vscode-extension-common": "file:../vscode-extension-common"
     }
 }
