@@ -9,7 +9,7 @@
     },
     "publisher": "dakara",
     "engines": {
-        "vscode": "^1.16.0"
+        "vscode": "^1.18.0"
     },
     "categories": [
         "Other"
@@ -56,7 +56,7 @@
         "@types/node": "^6.0.40",
         "mocha": "^2.3.3",
         "typescript": "^2.7.0-dev.20171118",
-        "vscode": "^1.1.7"
+        "vscode": "^1.1.8"
     },
     "dependencies": {
         "vscode-extension-common": "file:../vscode-extension-common"
