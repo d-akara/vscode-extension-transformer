@@ -5,17 +5,13 @@
     "tasks": [
         {
             "identifier": "transformer_build",
-            "label": "transformer build",
-            "type": "typescript",
-            "tsconfig": "transformer/tsconfig.json",
+            "label": "Transformer build watch",
+            "tsconfig": "tsconfig.json",
             "option": "watch",
+            "type": "typescript",
             "problemMatcher": [
                 "$tsc-watch"
-            ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            }
+            ]
         }
     ]
 }
