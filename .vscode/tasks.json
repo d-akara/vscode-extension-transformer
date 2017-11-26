@@ -6,9 +6,19 @@
         {
             "identifier": "transformer_build",
             "label": "Transformer build watch",
-            "tsconfig": "tsconfig.json",
-            "option": "watch",
-            "type": "typescript",
+            "type": "npm",
+            "script": "compile",
+            "isBackground": true,
+            "problemMatcher": [
+                "$tsc-watch"
+            ]
+        },
+        {
+            "identifier": "common_build",
+            "label": "Common build watch",
+            "type": "npm",
+            "script": "compile_common",
+            "isBackground": true,
             "problemMatcher": [
                 "$tsc-watch"
             ]
