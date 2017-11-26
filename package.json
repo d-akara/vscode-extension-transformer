@@ -20,7 +20,7 @@
         "onCommand:dakara-transformer.align",
         "onCommand:dakara-transformer.commands"
     ],
-    "main": "./out/src/extension",
+    "main": "./out/extension",
     "contributes": {
         "commands": [
             {
