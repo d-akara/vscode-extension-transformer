@@ -10,7 +10,7 @@ import * as edit from 'vscode-extension-common'
  * - unique lines
  * - unique lines containing filter
  * - trim lines
- * - reverse lines
+ * - reverse lines 
  * - sort folding regions
  * - sort lines by length
  * - split/join lines using token or expression
@@ -47,7 +47,12 @@ export function activate(context: vscode.ExtensionContext) {
         transforms.sortLines(textEditor, selections);
     });
     context.subscriptions.push(disposable);
-
+    disposable = vscode.commands.registerCommand('dakara-transformer.reverseLines', () => {
+        const textEditor = vscode.window.activeTextEditor;
+        const selections = textEditor.selections;
+        edit.reverseLines(textEditor, selections);
+    });
+    context.subscriptions.push(disposable);
     disposable = vscode.commands.registerCommand('dakara-transformer.filter', () => {
         const textEditor = vscode.window.activeTextEditor;
         const selection = textEditor.selection;
