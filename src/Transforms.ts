@@ -1,6 +1,7 @@
 'use strict';
 import * as vscode from 'vscode';
 import * as edit from 'vscode-extension-common'
+import { linesFromRange, replaceLines } from 'vscode-extension-common';
 
 const gutterDecorationType = vscode.window.createTextEditorDecorationType({
     rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed
