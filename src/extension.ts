@@ -10,8 +10,7 @@ import * as edit from 'vscode-extension-common'
  * - unique lines
  * - unique lines containing filter
  * - trim lines
- * - reverse lines 
- * - sort folding regions
+ * - sort folding regions / sort sections as determined by each cursor location
  * - sort lines by length
  * - split/join lines using token or expression
  * - Live realtime filtering view. click on filtered lines to jump to location.  Line numbers with filtered content
