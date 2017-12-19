@@ -1,7 +1,9 @@
 'use strict';
 import * as vscode from 'vscode';
 import * as edit from 'vscode-extension-common'
-import { linesFromRange, replaceLines } from 'vscode-extension-common';
+import { linesFromRange, replaceLines, expandRangeToBlockIfEmpty } from 'vscode-extension-common';
+import { basename } from 'path';
+import { ENGINE_METHOD_DIGESTS } from 'constants';
 
 const gutterDecorationType = vscode.window.createTextEditorDecorationType({
     rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed
@@ -10,7 +12,22 @@ export function sortLines(textEditor: vscode.TextEditor, ranges: Array<vscode.Ra
     if (ranges.length === 1) edit.sortLinesWithinRange(textEditor, edit.expandRangeToBlockIfEmpty(textEditor, ranges[0]));
     else edit.sortLinesByColumn(textEditor, ranges);
 }
+export function distinctLines(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
+    if(ranges.length === 1) {
+        const rangeBlock = edit.expandRangeToBlockIfEmpty(textEditor, ranges[0]);
+        const lines = edit.linesFromRange(textEditor.document, rangeBlock);
+        // Find out value of each line of array and check for duplicate..
+         const uniqueMep = new Map()
+        lines.forEach(line => {
+            uniqueMep.set(line.text, line);
+        });
 
+        const uniqueLines = uniqueMep.values()
+        const linesArray = Array.from(uniqueLines);
+        edit.replace(textEditor, rangeBlock, edit.textFromLines(textEditor.document, linesArray));
+    }
+
+}
 export function filterLinesToNewDocument(textEditor: vscode.TextEditor, selection:vscode.Selection) {
     const selectedText = edit.textOfSelectionOrWordAtCursor(textEditor.document, selection);
 
