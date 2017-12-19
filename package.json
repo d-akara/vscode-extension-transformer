@@ -19,7 +19,8 @@
         "onCommand:dakara-transformer.filter",
         "onCommand:dakara-transformer.align",
         "onCommand:dakara-transformer.commands",
-        "onCommand:dakara-transformer.reverseLines"
+        "onCommand:dakara-transformer.reverseLines",
+        "onCommand:dakara-transformer.distinctLines"
     ],
     "main": "./out/extension",
     "contributes": {
@@ -47,6 +48,11 @@
             {
                 "command": "dakara-transformer.commands",
                 "title": "List all commands",
+                "category": "Transform"
+            },
+            {
+                "command": "dakara-transformer.distinctLines",
+                "title": "Distinct Lines",
                 "category": "Transform"
             }
         ]
