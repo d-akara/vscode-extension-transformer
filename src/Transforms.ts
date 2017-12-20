@@ -12,12 +12,11 @@ export function sortLines(textEditor: vscode.TextEditor, ranges: Array<vscode.Ra
     if (ranges.length === 1) edit.sortLinesWithinRange(textEditor, edit.expandRangeToBlockIfEmpty(textEditor, ranges[0]));
     else edit.sortLinesByColumn(textEditor, ranges);
 }
-export function distinctLines(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
+export function uniqueLines(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
     if(ranges.length === 1) {
         const rangeBlock = edit.expandRangeToBlockIfEmpty(textEditor, ranges[0]);
         const lines = edit.linesFromRange(textEditor.document, rangeBlock);
-        // Find out value of each line of array and check for duplicate..
-         const uniqueMep = new Map()
+        const uniqueMep = new Map()
         lines.forEach(line => {
             uniqueMep.set(line.text, line);
         });
