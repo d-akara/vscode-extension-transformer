@@ -20,7 +20,7 @@
         "onCommand:dakara-transformer.align",
         "onCommand:dakara-transformer.commands",
         "onCommand:dakara-transformer.reverseLines",
-        "onCommand:dakara-transformer.distinctLines"
+        "onCommand:dakara-transformer.uniqueLines"
     ],
     "main": "./out/extension",
     "contributes": {
@@ -47,12 +47,12 @@
             },
             {
                 "command": "dakara-transformer.commands",
-                "title": "List all commands",
+                "title": "List All Commands",
                 "category": "Transform"
             },
             {
-                "command": "dakara-transformer.distinctLines",
-                "title": "Distinct Lines",
+                "command": "dakara-transformer.uniqueLines",
+                "title": "Keep Unique Lines",
                 "category": "Transform"
             }
         ]

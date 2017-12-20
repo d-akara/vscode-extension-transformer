@@ -53,10 +53,10 @@ export function activate(context: vscode.ExtensionContext) {
         edit.reverseLines(textEditor, selections);
     });
     context.subscriptions.push(disposable);
-    disposable = vscode.commands.registerCommand('dakara-transformer.distinctLines', () => {
+    disposable = vscode.commands.registerCommand('uniqueLines', () => {
         const textEditor = vscode.window.activeTextEditor;
         const selections = textEditor.selections;
-        transforms.distinctLines(textEditor, selections);
+        transforms.uniqueLines(textEditor, selections);
     });
     context.subscriptions.push(disposable);
     disposable = vscode.commands.registerCommand('dakara-transformer.filter', () => {
