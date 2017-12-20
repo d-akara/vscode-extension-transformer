@@ -6,6 +6,7 @@ import * as edit from 'vscode-extension-common'
  * TODO - planned features:
  * - Snap/Align to vertical cursor line
  * - Filter all lines of file to a new editor window
+ * - Filter blocks to new document
  * - Filter within selection
  * - unique lines
  * - unique lines containing filter
