@@ -20,7 +20,8 @@
         "onCommand:dakara-transformer.align",
         "onCommand:dakara-transformer.commands",
         "onCommand:dakara-transformer.reverseLines",
-        "onCommand:dakara-transformer.uniqueLines"
+        "onCommand:dakara-transformer.uniqueLines",
+        "onCommand:dakara-transformer.uniqueLinesNewDocument"
     ],
     "main": "./out/extension",
     "contributes": {
@@ -53,6 +54,11 @@
             {
                 "command": "dakara-transformer.uniqueLines",
                 "title": "Keep Unique Lines",
+                "category": "Transform"
+            },
+            {
+                "command": "dakara-transformer.uniqueLinesNewDocument",
+                "title": "�����������Z�n10_5!fji)R@(!PJS0F_9fsj-_���ޡ�a",
                 "category": "Transform"
             }
         ]
