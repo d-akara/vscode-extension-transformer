@@ -27,6 +27,22 @@ export function uniqueLines(textEditor: vscode.TextEditor, ranges: Array<vscode.
     }
 
 }
+export function uniqueLinesNewDocument(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
+    if(ranges.length === 1) {
+        const rangeBlock = edit.expandRangeToBlockIfEmpty(textEditor, ranges[0]);
+        const lines = edit.linesFromRange(textEditor.document, rangeBlock);
+        const uniqueMap = new Map()
+        lines.forEach(line => {
+            uniqueMap.set(line.text, line);
+        });
+
+        const uniqueLines = uniqueMap.values()
+        const linesArray = Array.from(uniqueLines);
+        vscode.workspace.openTextDocument({ 'language': textEditor.document.languageId, 'content': edit.textFromLines(textEditor.document, linesArray) })
+            .then(document => vscode.window.showTextDocument(document, vscode.ViewColumn.Two, false))    
+    }
+}
+                                                                                                                                        
 export function filterLinesToNewDocument(textEditor: vscode.TextEditor, selection:vscode.Selection) {
     const selectedText = edit.textOfSelectionOrWordAtCursor(textEditor.document, selection);
 
