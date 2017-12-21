@@ -5,9 +5,7 @@ import * as edit from 'vscode-extension-common'
 /**
  * TODO - planned features:
  * - Snap/Align to vertical cursor line
- * - Filter all lines of file to a new editor window
  * - Filter blocks to new document
- * - Filter within selection
  * - unique lines
  * - unique lines containing filter
  * - trim lines
@@ -31,21 +29,27 @@ interface LinkedDocument {
 } 
 
 export function activate(context: vscode.ExtensionContext) {
+    let disposable;
+
     const linkedDocuments= new Array<LinkedDocument>();
-    let disposable = vscode.languages.registerDefinitionProvider({scheme: 'untitled'}, {
-        provideDefinition(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken) {
-            const linkedDocument = linkedDocuments.find(linkedDocument => linkedDocument.target == linkedDocument.target);
-            //vscode.window.showTextDocument(linkedDocument.source.uri);
-            return new vscode.Location(linkedDocument.source.uri,  position);
-        }
-    }); 
-    context.subscriptions.push(disposable);
+    // Attempt to link to original lines of source document
+    // however, we don't have access to the decorations we create
+    // we would have to maintain our own mapping.  That is a bit painful, may consider again later.
+    //
+    // disposable = vscode.languages.registerDefinitionProvider({scheme: 'untitled'}, {
+    //     provideDefinition(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken) {
+    //         const linkedDocument = linkedDocuments.find(linkedDocument => linkedDocument.target === document);
+    //         return new vscode.Location(linkedDocument.source.uri,  position);
+    //     }
+    // }); 
+    // context.subscriptions.push(disposable);
 
     disposable = vscode.commands.registerCommand('dakara-transformer.sortLines', () => {
         const textEditor = vscode.window.activeTextEditor;
         const selections = textEditor.selections;
         transforms.sortLines(textEditor, selections);
     });
+
     context.subscriptions.push(disposable);
     disposable = vscode.commands.registerCommand('dakara-transformer.reverseLines', () => {
         const textEditor = vscode.window.activeTextEditor;
@@ -53,19 +57,29 @@ export function activate(context: vscode.ExtensionContext) {
         edit.reverseLines(textEditor, selections);
     });
     context.subscriptions.push(disposable);
+
     disposable = vscode.commands.registerCommand('dakara-transformer.uniqueLines', () => {
         const textEditor = vscode.window.activeTextEditor;
         const selections = textEditor.selections;
         transforms.uniqueLines(textEditor, selections);
     });
     context.subscriptions.push(disposable);
+
     disposable = vscode.commands.registerCommand('dakara-transformer.uniqueLinesNewDocument', () => {
         const textEditor = vscode.window.activeTextEditor;
         const selections = textEditor.selections;
-        transforms.uniqueLinesNewDocument(textEditor, selections);
+        transforms.uniqueLinesToNewDocument(textEditor, selections);
     });
     context.subscriptions.push(disposable);
+
     disposable = vscode.commands.registerCommand('dakara-transformer.filter', () => {
+        const textEditor = vscode.window.activeTextEditor;
+        const selection = textEditor.selection;
+        transforms.filterLines(textEditor, selection)
+    });
+    context.subscriptions.push(disposable);
+
+    disposable = vscode.commands.registerCommand('dakara-transformer.filterAsNewDocument', () => {
         const textEditor = vscode.window.activeTextEditor;
         const selection = textEditor.selection;
         transforms.filterLinesToNewDocument(textEditor, selection)

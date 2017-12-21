@@ -17,6 +17,7 @@
     "activationEvents": [
         "onCommand:dakara-transformer.sortLines",
         "onCommand:dakara-transformer.filter",
+        "onCommand:dakara-transformer.filterAsNewDocument",
         "onCommand:dakara-transformer.align",
         "onCommand:dakara-transformer.commands",
         "onCommand:dakara-transformer.reverseLines",
@@ -32,8 +33,13 @@
                 "category": "Transform"
             },
             {
-                "command": "dakara-transformer.filter",
+                "command": "dakara-transformer.filterAsNewDocument",
                 "title": "Filter Lines As New Document",
+                "category": "Transform"
+            },
+            {
+                "command": "dakara-transformer.filter",
+                "title": "Filter Lines",
                 "category": "Transform"
             },
             {
