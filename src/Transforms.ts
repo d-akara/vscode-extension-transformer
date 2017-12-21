@@ -10,6 +10,9 @@ export function sortLines(textEditor: vscode.TextEditor, ranges: Array<vscode.Ra
     if (ranges.length === 1) edit.sortLinesWithinRange(textEditor, edit.expandRangeToBlockIfEmpty(textEditor, ranges[0]));
     else edit.sortLinesByColumn(textEditor, ranges);
 }
+export function sortLinesByLength(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
+     edit.sortLinesByLength(textEditor,ranges[0]);
+}                                                                               
 
 export function uniqueLines(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
     if(ranges.length === 1) {
