@@ -1,17 +1,16 @@
 'use strict';
 import * as vscode from 'vscode';
 import * as edit from 'vscode-extension-common'
-import { linesFromRange, replaceLines, expandRangeToBlockIfEmpty } from 'vscode-extension-common';
-import { basename } from 'path';
-import { ENGINE_METHOD_DIGESTS } from 'constants';
 
 const gutterDecorationType = vscode.window.createTextEditorDecorationType({
     rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed
 });
+
 export function sortLines(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
     if (ranges.length === 1) edit.sortLinesWithinRange(textEditor, edit.expandRangeToBlockIfEmpty(textEditor, ranges[0]));
     else edit.sortLinesByColumn(textEditor, ranges);
 }
+
 export function uniqueLines(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
     if(ranges.length === 1) {
         const rangeBlock = edit.expandRangeToBlockIfEmpty(textEditor, ranges[0]);
@@ -25,9 +24,9 @@ export function uniqueLines(textEditor: vscode.TextEditor, ranges: Array<vscode.
         const linesArray = Array.from(uniqueLines);
         edit.replace(textEditor, rangeBlock, edit.textFromLines(textEditor.document, linesArray));
     }
-
 }
-export function uniqueLinesNewDocument(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
+
+export function uniqueLinesToNewDocument(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
     if(ranges.length === 1) {
         const rangeBlock = edit.expandRangeToBlockIfEmpty(textEditor, ranges[0]);
         const lines = edit.linesFromRange(textEditor.document, rangeBlock);
@@ -38,22 +37,36 @@ export function uniqueLinesNewDocument(textEditor: vscode.TextEditor, ranges: Ar
 
         const uniqueLines = uniqueMap.values()
         const linesArray = Array.from(uniqueLines);
-        vscode.workspace.openTextDocument({ 'language': textEditor.document.languageId, 'content': edit.textFromLines(textEditor.document, linesArray) })
-            .then(document => vscode.window.showTextDocument(document, vscode.ViewColumn.Two, false))    
+        edit.openShowDocument(edit.textFromLines(textEditor.document, linesArray));
     }
 }
-                                                                                                                                        
-export function filterLinesToNewDocument(textEditor: vscode.TextEditor, selection:vscode.Selection) {
-    const selectedText = edit.textOfSelectionOrWordAtCursor(textEditor.document, selection);
+
+export function filterLines(textEditor: vscode.TextEditor, selection:vscode.Selection) {
+    const selectedText = edit.textOfLineSelectionOrWordAtCursor(textEditor.document, selection);
+    // If we have multiple lines selected, use that as source to filter, else the entire document
+    const range = selection.isSingleLine ? edit.makeRangeDocument(textEditor) : selection;
 
     let filteredLines = [];
     return edit.promptForFilterExpression(selectedText)
         .then(fnFilter => {
-            filteredLines = edit.filterLines(textEditor, fnFilter);
+            filteredLines = edit.filterLines(textEditor, range, fnFilter);
             const content = filteredLines.map(line => line.text).reduce((prev, curr) => prev + "\n" + curr);
-            return vscode.workspace.openTextDocument({ 'language': textEditor.document.languageId, 'content': content });
+            edit.replace(textEditor, range, content);
         })
-        .then(document => vscode.window.showTextDocument(document, vscode.ViewColumn.Two, false))
+}
+
+export function filterLinesToNewDocument(textEditor: vscode.TextEditor, selection:vscode.Selection) {
+    const selectedText = edit.textOfLineSelectionOrWordAtCursor(textEditor.document, selection);
+    // If we have multiple lines selected, use that as source to filter, else the entire document
+    const range = selection.isSingleLine ? edit.makeRangeDocument(textEditor) : selection;
+
+    let filteredLines = [];
+    return edit.promptForFilterExpression(selectedText)
+        .then(fnFilter => {
+            filteredLines = edit.filterLines(textEditor, range, fnFilter);
+            const content = filteredLines.map(line => line.text).reduce((prev, curr) => prev + "\n" + curr);
+            return edit.openShowDocument(content)
+        })
         .then(editor => {
             const decorations = filteredLines.map((line, index) => edit.createGutterDecorator(index, ': ' + (line.lineNumber + 1), '50px'));
             editor.setDecorations(gutterDecorationType, decorations);
