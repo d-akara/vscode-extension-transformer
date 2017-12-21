@@ -58,7 +58,6 @@ export function filterLines(textEditor: vscode.TextEditor, selection:vscode.Sele
         })
 }
 
-
 export function filterLinesToNewDocument(textEditor: vscode.TextEditor, selection:vscode.Selection) {
     const selectedText = edit.textOfLineSelectionOrWordAtCursor(textEditor.document, selection);
     // If we have multiple lines selected, use that as source to filter, else the entire document

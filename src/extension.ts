@@ -2,7 +2,6 @@
 import * as vscode from 'vscode';
 import * as transforms from './Transforms';
 import * as edit from 'vscode-extension-common'
-import { SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION } from 'constants';
 /**
  * TODO - planned features:
  * - Snap/Align to vertical cursor line
