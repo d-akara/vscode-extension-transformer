@@ -2,6 +2,7 @@
 import * as vscode from 'vscode';
 import * as transforms from './Transforms';
 import * as edit from 'vscode-extension-common'
+import { SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION } from 'constants';
 /**
  * TODO - planned features:
  * - Snap/Align to vertical cursor line
@@ -72,6 +73,13 @@ export function activate(context: vscode.ExtensionContext) {
     });
     context.subscriptions.push(disposable);
 
+    disposable = vscode.commands.registerCommand('dakara-transformer.sortByLineLength', () => {
+        const textEditor = vscode.window.activeTextEditor;
+        const selections = textEditor.selections;
+        transforms.sortLinesByLength(textEditor, selections);
+    });
+    context.subscriptions.push(disposable)
+    
     disposable = vscode.commands.registerCommand('dakara-transformer.filter', () => {
         const textEditor = vscode.window.activeTextEditor;
         const selection = textEditor.selection;
