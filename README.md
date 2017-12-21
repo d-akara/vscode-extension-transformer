@@ -5,3 +5,15 @@
 
 ## Features
 
+### Filter Lines
+- Filters entire document or selection if exists
+- Filter using regex or literal
+- Current document is modified
+### Filter Lines As New Document
+- Filters entire document or selection if exists
+- Filter using regex or literal
+- A new document in editor column two is created with the results
+### Sort Lines
+- Sorts current block or selection if exists
+- Sorts by column when there is a vertical stack of multiple cursors using the cursor position to determine sort text for the line.
+- Current document is modified
