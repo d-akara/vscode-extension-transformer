@@ -72,6 +72,13 @@ export function activate(context: vscode.ExtensionContext) {
     });
     context.subscriptions.push(disposable);
 
+    disposable = vscode.commands.registerCommand('dakara-transformer.sortByLineLength', () => {
+        const textEditor = vscode.window.activeTextEditor;
+        const selections = textEditor.selections;
+        transforms.sortLinesByLength(textEditor, selections);
+    });
+    context.subscriptions.push(disposable)
+    
     disposable = vscode.commands.registerCommand('dakara-transformer.filter', () => {
         const textEditor = vscode.window.activeTextEditor;
         const selection = textEditor.selection;
