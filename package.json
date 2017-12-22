@@ -61,7 +61,7 @@
             },
             {
                 "command": "dakara-transformer.uniqueLines",
-                "title": "Keep Unique Lines",
+                "title": "Unique Lines",
                 "category": "Transform"
             },
             {
@@ -71,7 +71,7 @@
             },
             {
                 "command": "dakara-transformer.sortByLineLength",
-                "title": "Sort By Line Length,",
+                "title": "Sort Lines By Length",
                 "category": "Transform"
             }
         ]

@@ -6,12 +6,24 @@ const gutterDecorationType = vscode.window.createTextEditorDecorationType({
     rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed
 });
 
+function linesFromRangesExpandBlockIfEmpty(textEditor: vscode.TextEditor,ranges: Array<vscode.Range>) {
+    if(ranges.length === 1) {
+        ranges[0] = edit.expandRangeToBlockIfEmpty(textEditor, ranges[0]);
+    }
+    return edit.linesFromRanges(textEditor.document, ranges);
+}
+
 export function sortLines(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
-    if (ranges.length === 1) edit.sortLinesWithinRange(textEditor, edit.expandRangeToBlockIfEmpty(textEditor, ranges[0]));
-    else edit.sortLinesByColumn(textEditor, ranges);
+    if (ranges.length === 1 && !ranges[0].isSingleLine) edit.sortLinesWithinRange(textEditor,  ranges[0]);
+    else {
+        ranges = edit.makeVerticalRangesWithinBlock(textEditor, ranges);
+        textEditor.selections = edit.makeSelectionsFromRanges(ranges);
+        edit.sortLinesByColumn(textEditor, ranges);
+    } 
 }
 export function sortLinesByLength(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
-     edit.sortLinesByLength(textEditor,ranges[0]);
+    const linesToSort = edit.linesFromRanges(textEditor.document, ranges);
+    edit.sortLinesByLength(textEditor, linesToSort);
 }
 
 export function uniqueLines(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
@@ -30,18 +42,15 @@ export function uniqueLines(textEditor: vscode.TextEditor, ranges: Array<vscode.
 }
 
 export function uniqueLinesToNewDocument(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
-    if(ranges.length === 1) {
-        const rangeBlock = edit.expandRangeToBlockIfEmpty(textEditor, ranges[0]);
-        const lines = edit.linesFromRange(textEditor.document, rangeBlock);
-        const uniqueMap = new Map()
-        lines.forEach(line => {
-            uniqueMap.set(line.text, line);
-        });
+    const lines = linesFromRangesExpandBlockIfEmpty(textEditor, ranges);
+    const uniqueMap = new Map()
+    lines.forEach(line => {
+        uniqueMap.set(line.text, line);
+    });
 
-        const uniqueLines = uniqueMap.values()
-        const linesArray = Array.from(uniqueLines);
-        edit.openShowDocument(edit.textFromLines(textEditor.document, linesArray));
-    }
+    const uniqueLines = uniqueMap.values()
+    const linesArray = Array.from(uniqueLines);
+    edit.openShowDocument(edit.textFromLines(textEditor.document, linesArray));
 }
 
 export function filterLines(textEditor: vscode.TextEditor, selection:vscode.Selection) {
