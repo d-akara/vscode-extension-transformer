@@ -99,3 +99,37 @@ export function alignToCursor(textEditor: vscode.TextEditor, ranges: Array<vscod
         });
     })
 }
+
+export function alignCSV(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
+    const lines = linesFromRangesExpandBlockIfEmpty(textEditor, ranges);
+    const linesParts = lines.map(line=>line.text.split(','));
+    const newLineTexts:string[] = []
+    const linePartCount = linesParts[0].length;
+    for (let partIndex = 0; partIndex < linePartCount; partIndex++) {
+        const max = maxLength(linesParts, 0);
+        appendNewLines(newLineTexts, linesParts, max);
+    }
+
+    edit.replaceLinesWithText(textEditor, lines, newLineTexts);
+}
+
+function appendNewLines(lines:string[], linesParts:string[][], max:number) {
+    for (let linePartIndex = 0; linePartIndex < linesParts.length; linePartIndex++) {
+        const part = padRight(linesParts[linePartIndex].shift(), max);
+        
+        if (lines[linePartIndex] == undefined) lines[linePartIndex] = '';
+        lines[linePartIndex] += part;
+    }
+}
+
+function padRight(text:string, count:number) {
+    const padAmount = count - text.length;
+    return text + ' '.repeat(padAmount+1);
+}
+
+function maxLength(texts:string[][], partIndex:number) {
+    let max = 0;
+    return texts.map(text=>text[partIndex].length).reduce((prev, curr)=>{
+        return curr>=prev?curr:prev;
+    })
+}

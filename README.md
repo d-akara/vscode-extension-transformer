@@ -20,3 +20,5 @@
 ### Align To Cursor
 - Aligns text right of cursor to cursor position
 - Single cursor will auto expand vertically to block
+### Align CSV
+- Aligns CSV text into columns and removes delimeter
