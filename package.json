@@ -3,6 +3,7 @@
     "displayName": "Transformer",
     "description": "Filtering, Selection and Text Transformations",
     "version": "1.0.0",
+    "icon": "transformer-icon.png",
     "repository": {
         "type": "git",
         "url": "https://github.com/dakaraphi/vscode-extension-transformer"
