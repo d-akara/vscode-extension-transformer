@@ -4,7 +4,12 @@
 - Most commands implement auto scoping to select current block, document or selection as the target of an operation.
 
 ## Features
-
+### Sort Lines By Length
+- Sorts by length of the line
+### Unique Lines
+- Removes duplicate lines from the document
+### Unique Lines As New Document
+- Unique lines are opened in a new document
 ### Filter Lines
 - Keep matching lines of filter
 - Filters entire document or selection if exists
