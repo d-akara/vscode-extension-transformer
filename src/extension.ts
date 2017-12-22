@@ -6,11 +6,9 @@ import * as edit from 'vscode-extension-common'
  * TODO - planned features:
  * - Snap/Align to vertical cursor line
  * - Filter blocks to new document
- * - unique lines
  * - unique lines containing filter
  * - trim lines
  * - sort folding regions / sort sections as determined by each cursor location
- * - sort lines by length
  * - split/join lines using token or expression
  * - Live realtime filtering view. click on filtered lines to jump to location.  Line numbers with filtered content
  *  - combined live filter from all open documents.
