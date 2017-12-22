@@ -94,10 +94,10 @@ export function activate(context: vscode.ExtensionContext) {
     });
     context.subscriptions.push(disposable);
 
-    disposable = vscode.commands.registerCommand('dakara-transformer.align', () => {
+    disposable = vscode.commands.registerCommand('dakara-transformer.alignCursor', () => {
         const textEditor = vscode.window.activeTextEditor;
         const selections = textEditor.selections;
-        transforms.alignColumns(textEditor, selections);
+        transforms.alignToCursor(textEditor, selections);
     });
     context.subscriptions.push(disposable);
 

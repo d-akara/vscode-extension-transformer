@@ -18,7 +18,7 @@
         "onCommand:dakara-transformer.sortLines",
         "onCommand:dakara-transformer.filter",
         "onCommand:dakara-transformer.filterAsNewDocument",
-        "onCommand:dakara-transformer.align",
+        "onCommand:dakara-transformer.alignCursor",
         "onCommand:dakara-transformer.commands",
         "onCommand:dakara-transformer.reverseLines",
         "onCommand:dakara-transformer.uniqueLines",
@@ -49,8 +49,8 @@
                 "category": "Transform"
             },
             {
-                "command": "dakara-transformer.align",
-                "title": "Align",
+                "command": "dakara-transformer.alignCursor",
+                "title": "Align To Cursor",
                 "category": "Transform"
             },
             {
