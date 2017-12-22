@@ -1,0 +1,21 @@
+52  Landon    Medina     47  Ecte Point      Tubokotu  SD    58700 $107.63  RED    05/30/2045
+36  Jared     Davidson   54  Pocpi Heights   Pocopig   CT    60153 $1166.29 GREEN  12/02/1910
+75  Earl      Stevens    22  Nobbu Parkway   Aviapgu   HI    13088 $1173.06 WHITE  04/20/2030
+44  Randall   Boone      34  Tesog Grove     Owunetuw  DE    36160 $1210.99 GREEN  08/30/2029
+80  Tillie    Schmidt    25  Zoti Point      Capahzu   MS    76745 $1381.23 BLUE   12/26/1918
+43  Ollie     Mason      20  Lizah View      Lekuzag   NM    95654 $139.50  WHITE  09/07/1973
+29  Jerry     Cobb       24  Opsew Point     Lirufgu   MD    87466 $1544.93 GREEN  04/10/2012
+63  Roxie     Abbott     28  Vupro Street    Ewnidep   NE    63254 $1669.09 RED    04/18/1991
+77  Edith     McDaniel   46  Weguh Boulevard Terkebi   IL    96747 $1846.60 WHITE  06/02/1927
+79  Louisa    Jensen     42  Lola Turnpike   Keblamne  TN    92950 $1961.17 RED    08/10/1939
+
+66  Gussie    Patrick    24  Fefkem Way      Dapdewap  MI    85599 $2002.42 WHITE  06/11/2052
+66  Gussie    Patrick    24  Fefkem Way      Dapdewap  MI    85599 $2002.42 WHITE  06/11/2052
+66  Gussie    Patrick    24  Fefkem Way      Dapdewap  MI    85599 $2002.42 WHITE  06/11/2052
+18  Phillip   Mann       46  Rino Terrace    Bokajosup NH    63130 $2209.67 WHITE  05/13/1970
+28  Laura     Ortega     28  Sagded Parkway  Ozuzuhzu  ID    29401 $2277.51 YELLOW 06/01/2026
+6   Vera      Guerrero   30  Dewcan Park     Mevzarad  MO    87929 $2454.79 BLUE   06/28/2064
+48  Owen      Castillo   51  Mufe Boulevard  Larelke   IA    92818 $2531.45 WHITE  08/18/2018
+48  Owen      Castillo   51  Mufe Boulevard  Larelke   IA    92818 $2531.45 WHITE  08/18/2018
+48  Owen      Castillo   51  Mufe Boulevard  Larelke   IA    92818 $2531.45 WHITE  08/18/2018
+39  Nathaniel Joseph     30  Gadlaw Center   Hepefpu   ND    16986 $2755.68 YELLOW 09/05/1947
