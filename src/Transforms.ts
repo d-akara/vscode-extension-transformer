@@ -12,7 +12,7 @@ export function sortLines(textEditor: vscode.TextEditor, ranges: Array<vscode.Ra
 }
 export function sortLinesByLength(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
      edit.sortLinesByLength(textEditor,ranges[0]);
-}                                                                               
+}
 
 export function uniqueLines(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
     if(ranges.length === 1) {
@@ -77,8 +77,9 @@ export function filterLinesToNewDocument(textEditor: vscode.TextEditor, selectio
         });
 }
 
-export function alignColumns(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
-    //if (ranges.length === 1) autoAlign(textEditor, ranges[0]);
+export function alignToCursor(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
+    ranges = edit.makeVerticalRangesWithinBlock(textEditor, ranges);
+    textEditor.selections = edit.makeSelectionsFromRanges(ranges);
     const lineInfos = edit.makeLineInfos(textEditor, ranges);
     textEditor.edit(function (editBuilder) {
         lineInfos.forEach(line => {
