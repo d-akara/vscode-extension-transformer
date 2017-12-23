@@ -22,7 +22,7 @@ export function sortLines(textEditor: vscode.TextEditor, ranges: Array<vscode.Ra
     } 
 }
 export function sortLinesByLength(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
-    const linesToSort = edit.linesFromRanges(textEditor.document, ranges);
+    const linesToSort = linesFromRangesExpandBlockIfEmpty(textEditor, ranges);
     edit.sortLinesByLength(textEditor, linesToSort);
 }
 
