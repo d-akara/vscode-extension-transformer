@@ -99,6 +99,13 @@ export function activate(context: vscode.ExtensionContext) {
     });
     context.subscriptions.push(disposable);
 
+    disposable = vscode.commands.registerCommand('dakara-transformer.alignCSV', () => {
+        const textEditor = vscode.window.activeTextEditor;
+        const selections = textEditor.selections;
+        transforms.alignCSV(textEditor, selections);
+    });
+    context.subscriptions.push(disposable);
+
     disposable = vscode.commands.registerCommand('dakara-transformer.commands', () => {
         const textEditor = vscode.window.activeTextEditor;
         const commands = vscode.commands.getCommands().then(commandList => {
