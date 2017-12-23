@@ -4,6 +4,20 @@
 - Most commands implement auto scoping to select current block, document or selection as the target of an operation.
 
 ## Features
+### Sort Lines By Length
+- Sorts by length of the line
+
+![ScreenShot](/readme-images/sort-lines-length.gif)
+
+### Unique Lines
+- Removes duplicate lines from the document
+
+![ScreenShot](/readme-images/unique-lines.gif)
+
+### Unique Lines As New Document
+- Unique lines are opened in a new document
+
+![ScreenShot](/readme-images/unique-lines-document.gif)
 
 ### Filter Lines
 - Keep matching lines of filter
