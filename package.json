@@ -2,7 +2,7 @@
     "name": "transformer",
     "displayName": "Transformer",
     "description": "Filtering, Selection and Text Transformations",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "icon": "transformer-icon.png",
     "repository": {
         "type": "git",
