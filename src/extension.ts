@@ -114,6 +114,12 @@ export function activate(context: vscode.ExtensionContext) {
         })
     });
     context.subscriptions.push(disposable);
+
+    disposable = vscode.commands.registerCommand('dakara-transformer.copyToNewDocument', () => {
+        const textEditor = vscode.window.activeTextEditor;
+        transforms.copyToNewDocument(textEditor);
+    });
+    context.subscriptions.push(disposable);
 }
 
 export function deactivate() {

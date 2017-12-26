@@ -55,3 +55,7 @@
 - Aligns CSV text into columns and removes delimeter
 
 ![ScreenShot](/readme-images/align-csv.gif)
+
+### Copy To New Document
+- Copies selections to a new document
+- Operates on selections or find match results or entire document

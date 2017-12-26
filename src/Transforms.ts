@@ -133,3 +133,11 @@ function maxLength(texts:string[][], partIndex:number) {
         return curr>=prev?curr:prev;
     })
 }
+
+export function copyToNewDocument(textEditor: vscode.TextEditor) {
+    edit.selectionsOrMatchesAsSelectionsOrDocument(textEditor)
+        .then(selections=> {
+            const textFromSelections = edit.textsFromRanges(textEditor.document, selections);
+            edit.openShowDocument(textFromSelections.join('\n'));
+        });
+}

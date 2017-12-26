@@ -25,7 +25,8 @@
         "onCommand:dakara-transformer.reverseLines",
         "onCommand:dakara-transformer.uniqueLines",
         "onCommand:dakara-transformer.uniqueLinesNewDocument",
-        "onCommand:dakara-transformer.sortByLineLength"
+        "onCommand:dakara-transformer.sortByLineLength",
+        "onCommand:dakara-transformer.copyToNewDocument"
     ],
     "main": "./out/extension",
     "contributes": {
@@ -78,6 +79,11 @@
             {
                 "command": "dakara-transformer.sortByLineLength",
                 "title": "Sort Lines By Length",
+                "category": "Transform"
+            },
+            {
+                "command": "dakara-transformer.copyToNewDocument",
+                "title": "Copy To New Document",
                 "category": "Transform"
             }
         ]
