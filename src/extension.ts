@@ -7,6 +7,7 @@ import * as edit from 'vscode-extension-common'
  * - Snap/Align to vertical cursor line
  * - Filter blocks to new document
  * - unique lines containing filter
+ * - count unique lines to new document
  * - trim lines
  * - sort folding regions / sort sections as determined by each cursor location
  * - split/join lines using token or expression
@@ -103,6 +104,13 @@ export function activate(context: vscode.ExtensionContext) {
         const textEditor = vscode.window.activeTextEditor;
         const selections = textEditor.selections;
         transforms.alignCSV(textEditor, selections);
+    });
+    context.subscriptions.push(disposable);
+
+    disposable = vscode.commands.registerCommand('dakara-transformer.compactCSV', () => {
+        const textEditor = vscode.window.activeTextEditor;
+        const selections = textEditor.selections;
+        transforms.compactCSV(textEditor, selections);
     });
     context.subscriptions.push(disposable);
 
