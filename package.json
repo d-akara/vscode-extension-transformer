@@ -2,7 +2,7 @@
     "name": "transformer",
     "displayName": "Transformer",
     "description": "Filter, Sort, Unique, Reverse, Align, CSV, Line Selection and Text Transformations",
-    "version": "1.0.2",
+    "version": "1.1.0",
     "icon": "transformer-icon.png",
     "repository": {
         "type": "git",
@@ -21,6 +21,7 @@
         "onCommand:dakara-transformer.filterAsNewDocument",
         "onCommand:dakara-transformer.alignCursor",
         "onCommand:dakara-transformer.alignCSV",
+        "onCommand:dakara-transformer.compactCSV",
         "onCommand:dakara-transformer.commands",
         "onCommand:dakara-transformer.reverseLines",
         "onCommand:dakara-transformer.uniqueLines",
@@ -59,6 +60,11 @@
             {
                 "command": "dakara-transformer.alignCSV",
                 "title": "Align CSV",
+                "category": "Transform"
+            },
+            {
+                "command": "dakara-transformer.compactCSV",
+                "title": "Compact CSV",
                 "category": "Transform"
             },
             {

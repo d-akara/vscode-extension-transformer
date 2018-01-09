@@ -105,20 +105,29 @@ export function alignCSV(textEditor: vscode.TextEditor, ranges: Array<vscode.Ran
     const linesParts = lines.map(line=>line.text.split(','));
     const newLineTexts:string[] = []
     const linePartCount = linesParts[0].length;
-    for (let partIndex = 0; partIndex < linePartCount; partIndex++) {
+    for (let columnIndex = 0; columnIndex < linePartCount; columnIndex++) {
         const max = maxLength(linesParts, 0);
-        appendNewLines(newLineTexts, linesParts, max);
+        appendColumn(newLineTexts, linesParts, max);
+        if (columnIndex != linePartCount - 1)
+            appendDelimeter(newLineTexts, ',');
     }
 
     edit.replaceLinesWithText(textEditor, lines, newLineTexts);
 }
 
-function appendNewLines(lines:string[], linesParts:string[][], max:number) {
+function appendColumn(lines:string[], linesParts:string[][], max:number) {
     for (let linePartIndex = 0; linePartIndex < linesParts.length; linePartIndex++) {
         const part = padRight(linesParts[linePartIndex].shift(), max);
         
         if (lines[linePartIndex] == undefined) lines[linePartIndex] = '';
         lines[linePartIndex] += part;
+    }
+}
+
+function appendDelimeter(lines:string[], delimeter:string) {
+    for (let linePartIndex = 0; linePartIndex  < lines.length; linePartIndex++) {
+        lines[linePartIndex] = lines[linePartIndex] + delimeter
+        
     }
 }
 
@@ -132,6 +141,30 @@ function maxLength(texts:string[][], partIndex:number) {
     return texts.map(text=>text[partIndex].length).reduce((prev, curr)=>{
         return curr>=prev?curr:prev;
     })
+}
+
+export function compactCSV(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
+    const lines = linesFromRangesExpandBlockIfEmpty(textEditor, ranges);
+    const linesParts = lines.map(line=>line.text.split(','));
+    const newLineTexts:string[] = []
+    const linePartCount = linesParts[0].length;
+    for (let columnIndex = 0; columnIndex < linePartCount; columnIndex++) {
+        const max = maxLength(linesParts, 0);
+        compactColumn(newLineTexts, linesParts, max);
+        if (columnIndex != linePartCount - 1)
+            appendDelimeter(newLineTexts, ',');
+    }
+
+    edit.replaceLinesWithText(textEditor, lines, newLineTexts);
+}
+
+function compactColumn(lines:string[], linesParts:string[][], max:number) {
+    for (let linePartIndex = 0; linePartIndex < linesParts.length; linePartIndex++) {
+        const part = linesParts[linePartIndex].shift().trim()
+        
+        if (lines[linePartIndex] == undefined) lines[linePartIndex] = '';
+        lines[linePartIndex] += part;
+    }
 }
 
 export function copyToNewDocument(textEditor: vscode.TextEditor) {
