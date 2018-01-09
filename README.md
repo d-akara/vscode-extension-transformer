@@ -52,9 +52,12 @@
 ![ScreenShot](/readme-images/align-cursor.gif)
 
 ### Align CSV
-- Aligns CSV text into columns and removes delimeter
+- Aligns CSV text into columns
 
 ![ScreenShot](/readme-images/align-csv.gif)
+
+### Compact CSV
+- Does the opposite of `Align CSV`, removes white space between columns.
 
 ### Copy To New Document
 - Copies selections to a new document
