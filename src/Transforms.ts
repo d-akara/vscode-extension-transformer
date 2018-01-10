@@ -174,3 +174,13 @@ export function copyToNewDocument(textEditor: vscode.TextEditor) {
             edit.openShowDocument(textFromSelections.join('\n'));
         });
 }
+
+export function selectLines(textEditor: vscode.TextEditor) {
+    edit.selectionsOrMatchesAsSelectionsOrDocument(textEditor)
+        .then(selections=> {
+            textEditor.selections = selections.map(selection=> {
+                const range = edit.expandRangeFullLineWidth(textEditor.document, selection)
+                return new vscode.Selection(range.start, range.end);
+            })
+        });
+}

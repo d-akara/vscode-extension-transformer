@@ -1,3 +1,5 @@
+## [1.2.0]
+- Added `Select Lines` command which expands all current find match results or cursors to full line selections
 ## [1.1.0]
 - Changed `Align CSV` to preserve delimeter so that it can be used for round trip editing
 - Added `Compact CSV` command so that aligned CSV can be restored to its compact format

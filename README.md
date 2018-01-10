@@ -62,3 +62,6 @@
 ### Copy To New Document
 - Copies selections to a new document
 - Operates on selections or find match results or entire document
+
+### Select Lines
+- Expands all current find match results or cursors to full line selections

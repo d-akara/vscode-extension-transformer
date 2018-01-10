@@ -4,9 +4,9 @@ import * as transforms from './Transforms';
 import * as edit from 'vscode-extension-common'
 /**
  * TODO - planned features:
- * - Snap/Align to vertical cursor line
  * - Filter blocks to new document
  * - unique lines containing filter
+ * - unique words as new document
  * - count unique lines to new document
  * - trim lines
  * - sort folding regions / sort sections as determined by each cursor location
@@ -17,9 +17,11 @@ import * as edit from 'vscode-extension-common'
  *  - all lines containing...
  *  - remove selections containing...
  *  - all lines with same level
- *  - copy selections to new editor
  * - snippet transformation
  * - scrapbook transformations
+ * - escapes and unescapes
+ * - hex/bin/dec
+ * - wrap at designated length
  */
 
 interface LinkedDocument {
@@ -126,6 +128,12 @@ export function activate(context: vscode.ExtensionContext) {
     disposable = vscode.commands.registerCommand('dakara-transformer.copyToNewDocument', () => {
         const textEditor = vscode.window.activeTextEditor;
         transforms.copyToNewDocument(textEditor);
+    });
+    context.subscriptions.push(disposable);
+
+    disposable = vscode.commands.registerCommand('dakara-transformer.selectLines', () => {
+        const textEditor = vscode.window.activeTextEditor;
+        transforms.selectLines(textEditor);
     });
     context.subscriptions.push(disposable);
 }

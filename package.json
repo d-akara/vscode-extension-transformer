@@ -2,7 +2,7 @@
     "name": "transformer",
     "displayName": "Transformer",
     "description": "Filter, Sort, Unique, Reverse, Align, CSV, Line Selection and Text Transformations",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "icon": "transformer-icon.png",
     "repository": {
         "type": "git",
@@ -16,18 +16,19 @@
         "Other"
     ],
     "activationEvents": [
-        "onCommand:dakara-transformer.sortLines",
+        "onCommand:dakara-transformer.alignCSV",
+        "onCommand:dakara-transformer.alignCursor",
+        "onCommand:dakara-transformer.commands",
+        "onCommand:dakara-transformer.compactCSV",
+        "onCommand:dakara-transformer.copyToNewDocument",
         "onCommand:dakara-transformer.filter",
         "onCommand:dakara-transformer.filterAsNewDocument",
-        "onCommand:dakara-transformer.alignCursor",
-        "onCommand:dakara-transformer.alignCSV",
-        "onCommand:dakara-transformer.compactCSV",
-        "onCommand:dakara-transformer.commands",
         "onCommand:dakara-transformer.reverseLines",
-        "onCommand:dakara-transformer.uniqueLines",
-        "onCommand:dakara-transformer.uniqueLinesNewDocument",
+        "onCommand:dakara-transformer.selectLines",
         "onCommand:dakara-transformer.sortByLineLength",
-        "onCommand:dakara-transformer.copyToNewDocument"
+        "onCommand:dakara-transformer.sortLines",
+        "onCommand:dakara-transformer.uniqueLines",
+        "onCommand:dakara-transformer.uniqueLinesNewDocument"
     ],
     "main": "./out/extension",
     "contributes": {
@@ -91,6 +92,11 @@
                 "command": "dakara-transformer.copyToNewDocument",
                 "title": "Copy To New Document",
                 "category": "Transform"
+            },
+            {
+                "command": "dakara-transformer.selectLines",
+                "title": "Select Lines",
+                "category": "Transform"
             }
         ]
     },
@@ -102,11 +108,11 @@
         "test": "node ./node_modules/vscode/bin/test"
     },
     "devDependencies": {
-        "@types/mocha": "^2.2.32",
-        "@types/node": "^6.0.40",
+        "@types/mocha": "^2.2.46",
+        "@types/node": "^6.0.96",
         "mocha": "^2.3.3",
-        "typescript": "^2.7.0-dev.20171118",
-        "vscode": "^1.1.8"
+        "typescript": "^2.6.2",
+        "vscode": "^1.1.10"
     },
     "dependencies": {
         "vscode-extension-common": "file:../vscode-extension-common"
