@@ -136,6 +136,12 @@ export function activate(context: vscode.ExtensionContext) {
         transforms.selectLines(textEditor);
     });
     context.subscriptions.push(disposable);
+
+    disposable = vscode.commands.registerCommand('dakara-transformer.linesAsJSON', () => {
+        const textEditor = vscode.window.activeTextEditor;
+        transforms.linesAsJSON(textEditor);
+    });
+    context.subscriptions.push(disposable);
 }
 
 export function deactivate() {

@@ -65,3 +65,7 @@
 
 ### Select Lines
 - Expands all current find match results or cursors to full line selections
+
+### Lines As JSON
+- Converts each line to a JSON string
+- Useful for easily creating snippet bodies with selected text

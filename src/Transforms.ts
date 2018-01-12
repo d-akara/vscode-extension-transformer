@@ -184,3 +184,9 @@ export function selectLines(textEditor: vscode.TextEditor) {
             })
         });
 }
+
+export function linesAsJSON(textEditor: vscode.TextEditor) {
+    const lines = edit.linesFromRange(textEditor.document, textEditor.selection)
+    const jsonLines = lines.map(line=>JSON.stringify(line.text) + ",")
+    edit.replaceLinesWithText(textEditor, lines, jsonLines);
+}
