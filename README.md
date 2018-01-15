@@ -6,18 +6,18 @@
 
 ## Features
 
-* [Unique Lines](#Unique-Lines)
-* [Unique Lines As New Document](#Unique-Lines-As-New-Document)
-* [Filter Lines](#Filter-Lines)
-* [Filter Lines As New Document](#Filter-Lines-As-New-Document)
-* [Sort Lines](#Sort-Lines)
-* [Sort Lines By Length](#Sort-Lines-By-Length)
-* [Align To Cursor](#Align-To-Cursor)
-* [Align CSV](#Align-CSV)
-* [Compact CSV](#Compact-CSV)
-* [Copy To New Document](#Copy-To-New-Document)
-* [Select Lines](#Select-Lines)
-* [Lines As JSON](#Lines-As-JSON)
+* [Unique Lines](#unique-lines)
+* [Unique Lines As New Document](#unique-lines-as-new-document)
+* [Filter Lines](#filter-lines)
+* [Filter Lines As New Document](#filter-lines-as-new-document)
+* [Sort Lines](#sort-lines)
+* [Sort Lines By Length](#sort-lines-by-length)
+* [Align To Cursor](#align-to-cursor)
+* [Align CSV](#align-csv)
+* [Compact CSV](#compact-csv)
+* [Copy To New Document](#copy-to-new-document)
+* [Select Lines](#select-lines)
+* [Lines As JSON](#lines-as-json)
 
 ### Unique Lines
 - Removes duplicate lines from the document
