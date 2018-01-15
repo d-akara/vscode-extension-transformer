@@ -17,6 +17,7 @@ import * as edit from 'vscode-extension-common'
  *  - all lines containing...
  *  - remove selections containing...
  *  - all lines with same level
+ *  - expand selection that can work with multiple cursors
  * - snippet transformation
  * - scrapbook transformations
  * - escapes and unescapes

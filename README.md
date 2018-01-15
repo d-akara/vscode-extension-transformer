@@ -6,6 +6,19 @@
 
 ## Features
 
+* [Unique Lines](#Unique-Lines)
+* [Unique Lines As New Document](#Unique-Lines-As-New-Document)
+* [Filter Lines](#Filter-Lines)
+* [Filter Lines As New Document](#Filter-Lines-As-New-Document)
+* [Sort Lines](#Sort-Lines)
+* [Sort Lines By Length](#Sort-Lines-By-Length)
+* [Align To Cursor](#Align-To-Cursor)
+* [Align CSV](#Align-CSV)
+* [Compact CSV](#Compact-CSV)
+* [Copy To New Document](#Copy-To-New-Document)
+* [Select Lines](#Select-Lines)
+* [Lines As JSON](#Lines-As-JSON)
+
 ### Unique Lines
 - Removes duplicate lines from the document
 - Operates on selection or current block if no selection
@@ -69,3 +82,5 @@
 ### Lines As JSON
 - Converts each line to a JSON string
 - Useful for easily creating snippet bodies with selected text
+
+![ScreenShot](/readme-images/lines-as-json.gif)
