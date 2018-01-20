@@ -4,7 +4,6 @@ import * as transforms from './Transforms';
 import * as edit from 'vscode-extension-common'
 /**
  * TODO - planned features:
- * - Filter blocks to new document
  * - unique lines containing filter
  * - unique words as new document
  * - count unique lines to new document
@@ -18,7 +17,6 @@ import * as edit from 'vscode-extension-common'
  *  - remove selections containing...
  *  - all lines with same level
  *  - expand selection that can work with multiple cursors
- * - snippet transformation
  * - scrapbook transformations
  * - escapes and unescapes
  * - hex/bin/dec
@@ -96,6 +94,13 @@ export function activate(context: vscode.ExtensionContext) {
     });
     context.subscriptions.push(disposable);
 
+    disposable = vscode.commands.registerCommand('dakara-transformer.filterAsNewDocumentLive', () => {
+        const textEditor = vscode.window.activeTextEditor;
+        const selection = textEditor.selection;
+        transforms.filterLinesToNewDocumentLive(textEditor, selection)
+    });
+    context.subscriptions.push(disposable);
+
     disposable = vscode.commands.registerCommand('dakara-transformer.alignCursor', () => {
         const textEditor = vscode.window.activeTextEditor;
         const selections = textEditor.selections;
@@ -121,7 +126,7 @@ export function activate(context: vscode.ExtensionContext) {
         const textEditor = vscode.window.activeTextEditor;
         const commands = vscode.commands.getCommands().then(commandList => {
             const content = commandList.reduce((prev, curr) => prev + '\n' + curr);
-            return edit.openDocumentWith(content);
+            return edit.openShowDocument('untitled:commands.txt', content);
         })
     });
     context.subscriptions.push(disposable);
