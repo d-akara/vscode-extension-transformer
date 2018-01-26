@@ -4,10 +4,11 @@ import * as transforms from './Transforms';
 import * as edit from 'vscode-extension-common'
 /**
  * TODO - planned features:
- * - unique lines containing filter
+ * - unique selections as new document
  * - unique words as new document
  * - count unique lines to new document
  * - trim lines
+ * - trim identical parts of lines
  * - sort folding regions / sort sections as determined by each cursor location
  * - split/join lines using token or expression
  * - Live realtime filtering view. click on filtered lines to jump to location.  Line numbers with filtered content
@@ -94,10 +95,10 @@ export function activate(context: vscode.ExtensionContext) {
     });
     context.subscriptions.push(disposable);
 
-    disposable = vscode.commands.registerCommand('dakara-transformer.filterAsNewDocumentLive', () => {
+    disposable = vscode.commands.registerCommand('dakara-transformer.liveTransform', () => {
         const textEditor = vscode.window.activeTextEditor;
         const selection = textEditor.selection;
-        transforms.filterLinesToNewDocumentLive(textEditor, selection)
+        transforms.liveTransform(textEditor, selection)
     });
     context.subscriptions.push(disposable);
 
