@@ -85,33 +85,32 @@ export function filterLinesToNewDocument(textEditor: vscode.TextEditor, selectio
         })
 }
 
-export function filterLinesToNewDocumentLive(textEditor: vscode.TextEditor, selection:vscode.Selection) {
-    const selectedText = edit.textOfLineSelectionOrWordAtCursor(textEditor.document, selection);
-    return edit.promptForFilterExpression(selectedText)
-        .then(fnFilter => {
-            function filterDocument(document) {
-                return edit.filterLines(document, edit.makeRangeDocument(document), fnFilter);
-            }
-            openShowDocumentWithLines(textEditor, filterDocument(textEditor.document)).then(targetEditor => {
-                const targetDocument = targetEditor.document
-                vscode.workspace.onDidChangeTextDocument(event=> {
-                    if (event.document.fileName === targetDocument.fileName) return
-                    console.log(event.document.fileName + " : " + targetDocument.fileName)
-                    if (event.document.isUntitled) return;
-                    const filteredLines = filterDocument(event.document)
-                    return openShowDocumentWithLines(textEditor, filterDocument(event.document))
-                })
-            })
-        })
-}
-
 function openShowDocumentWithLines(textEditor: vscode.TextEditor, filteredLines) {
     const content = filteredLines.map(line => line.text).reduce((prev, curr) => prev + "\n" + curr);
-    //return edit.openShowDocument(content)
     return edit.openShowDocument(originName(textEditor), content)
         .then(editor => {
             const decorations = filteredLines.map((line, index) => edit.createGutterDecorator(index, ': ' + (line.lineNumber + 1), '50px'));
             editor.setDecorations(gutterDecorationType, decorations);
+            return editor;
+        });
+}
+
+export function liveTransform(textEditor: vscode.TextEditor, selection:vscode.Selection) {
+    function filterDocument(document, targetDocument:vscode.TextDocument) {
+        const filter = targetDocument.lineAt(0).text
+        return edit.filterLines(document, edit.makeRangeDocument(document), line=>line.includes(filter))
+            .map(line => line.text)
+            .reduce((prev, curr) => prev + '\n' + curr)
+    }
+
+    return edit.openShowDocument(originName(textEditor), '')
+        .then(editor => {
+            const targetDocument = editor.document
+            vscode.workspace.onDidChangeTextDocument(event=> {
+                if (event.document === targetDocument) return
+                const allAfterFirstLine = edit.makeRangeFromLineToEnd(targetDocument, 1)
+                edit.replace(editor, allAfterFirstLine, filterDocument(event.document, targetDocument))
+            })
             return editor;
         });
 }
