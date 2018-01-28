@@ -97,11 +97,17 @@ function openShowDocumentWithLines(textEditor: vscode.TextEditor, filteredLines)
 
 export function liveTransform(textEditor: vscode.TextEditor, selection:vscode.Selection) {
     const FILTER_SEPARATOR = '------------------------------------------------------------------------'
-    function extractFilterFromDocument(document:vscode.TextDocument) {
+
+    function filterRange(document:vscode.TextDocument) {
         const lines = edit.linesFromRange(document, edit.makeRangeDocument(document))
         const separatorLine = lines.find(line=>line.text===FILTER_SEPARATOR).lineNumber
-        const filterText = document.getText(new vscode.Range(new vscode.Position(0,0), new vscode.Position(separatorLine, 0))).trim()
-        return {filterText, separatorLine}
+        return new vscode.Range(new vscode.Position(0,0), new vscode.Position(separatorLine, 0))
+    }
+
+    function extractFilterFromDocument(document:vscode.TextDocument) {
+        const range = filterRange(document)
+        const filterText = document.getText(filterRange(document)).trim()
+        return {filterText, separatorLine: range.end.line + 1}
     }
     function filterDocument(document, filter:string) {
         return edit.filterLines(document, edit.makeRangeDocument(document), line=>line.includes(filter))
@@ -114,24 +120,33 @@ export function liveTransform(textEditor: vscode.TextEditor, selection:vscode.Se
     }
 
     function documentToDocumentTransform(sourceDocument:vscode.TextDocument, targetDocument:vscode.TextDocument) {
-        if (sourceDocument === targetDocument) return
         const targetEditor:vscode.TextEditor = visibleTextEditorFromDocument(targetDocument)
         if (!targetEditor) return
         const {filterText, separatorLine} = extractFilterFromDocument(targetDocument)
-        const allAfterFirstLine = edit.makeRangeFromLineToEnd(targetDocument, separatorLine+1)
+        const allAfterFirstLine = edit.makeRangeFromLineToEnd(targetDocument, separatorLine)
         edit.replace(targetEditor, allAfterFirstLine, filterDocument(sourceDocument, filterText))
         // reset selection.  Otherwise all replaced text is highlighted in selection
-        targetEditor.selection = new vscode.Selection(new vscode.Position(0,0), new vscode.Position(0,0))
+        //targetEditor.selection = new vscode.Selection(new vscode.Position(0,0), new vscode.Position(0,0))
     }
 
+    let lastActiveSourceDocument = vscode.window.activeTextEditor.document
     return edit.openShowDocument(originName(textEditor), '\n' + FILTER_SEPARATOR, false)
         .then(editor => {
             // reset selection.  Otherwise all replaced text is highlighted in selection
             editor.selection = new vscode.Selection(new vscode.Position(0,0), new vscode.Position(0,0))
 
             const targetDocument = editor.document
-            vscode.workspace.onDidChangeTextDocument(event=> documentToDocumentTransform(event.document, targetDocument))
-            vscode.window.onDidChangeActiveTextEditor(event=> documentToDocumentTransform(event.document, targetDocument))
+            vscode.workspace.onDidChangeTextDocument(event=> {
+                // TODO - we need to know the last active text editor when typing in the target document
+                // otherwise we are transforming ourselves
+                if (event.document === targetDocument && !filterRange(targetDocument).contains(event.contentChanges[0].range)) return
+                documentToDocumentTransform(lastActiveSourceDocument, targetDocument)
+            })
+            vscode.window.onDidChangeActiveTextEditor(event=> {
+                if (event.document !== targetDocument)
+                    lastActiveSourceDocument = event.document
+                documentToDocumentTransform(lastActiveSourceDocument, targetDocument)
+            })
             return editor;
         });
 }
