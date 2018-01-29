@@ -2,6 +2,7 @@
 import * as path from 'path'
 import * as vscode from 'vscode';
 import * as edit from 'vscode-extension-common'
+import { ExceptionInfo } from '_debugger';
 
 const gutterDecorationType = vscode.window.createTextEditorDecorationType({
     rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed
@@ -109,10 +110,28 @@ export function liveTransform(textEditor: vscode.TextEditor, selection:vscode.Se
         const filterText = document.getText(filterRange(document)).trim()
         return {filterText, separatorLine: range.end.line + 1}
     }
+
+    function linesFromSourceDocument(document:vscode.TextDocument) {
+        const editor = visibleTextEditorFromDocument(document)
+        if (!editor) return edit.linesFromRange(document, edit.makeRangeDocument(document))
+        return edit.linesFromRanges(textEditor.document, editor.selections);
+    }
+
     function filterDocument(document, filter:string) {
-        return edit.filterLines(document, edit.makeRangeDocument(document), line=>line.includes(filter))
-            .map(line => line.text)
-            .reduce((prev, curr) => prev + '\n' + curr, '')
+        //if (typeof filterFn !== "function") return ''
+        const lines = linesFromSourceDocument(document).map(line=>line.text)
+        //const filterFn = eval(filter)
+        let result = ''
+        try {
+            result = eval(filter).reduce((prev, curr) => prev + '\n' + curr, '')
+        } catch (error) {
+            result = error.message
+        }
+        
+        return result;
+        // return edit.filterLines(document, edit.makeRangeDocument(document), filterFn)
+        //     .map(line => line.text)
+        //     .reduce((prev, curr) => prev + '\n' + curr, '')
     }
 
     function visibleTextEditorFromDocument(document:vscode.TextDocument) {
@@ -137,11 +156,13 @@ export function liveTransform(textEditor: vscode.TextEditor, selection:vscode.Se
 
             const targetDocument = editor.document
             vscode.workspace.onDidChangeTextDocument(event=> {
-                // TODO - we need to know the last active text editor when typing in the target document
-                // otherwise we are transforming ourselves
                 if (event.document === targetDocument && !filterRange(targetDocument).contains(event.contentChanges[0].range)) return
                 documentToDocumentTransform(lastActiveSourceDocument, targetDocument)
             })
+            vscode.window.onDidChangeTextEditorSelection(event=> {
+                if (event.textEditor.document === targetDocument) return
+                documentToDocumentTransform(lastActiveSourceDocument, targetDocument)
+            })            
             vscode.window.onDidChangeActiveTextEditor(event=> {
                 if (event.document !== targetDocument)
                     lastActiveSourceDocument = event.document
