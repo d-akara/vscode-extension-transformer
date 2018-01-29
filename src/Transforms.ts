@@ -149,7 +149,7 @@ export function liveTransform(textEditor: vscode.TextEditor, selection:vscode.Se
     }
 
     let lastActiveSourceDocument = vscode.window.activeTextEditor.document
-    return edit.openShowDocument(originName(textEditor), '\n' + FILTER_SEPARATOR, false)
+    return edit.openShowDocument(originName(textEditor), '\n' + FILTER_SEPARATOR + '\n', false)
         .then(editor => {
             // reset selection.  Otherwise all replaced text is highlighted in selection
             editor.selection = new vscode.Selection(new vscode.Position(0,0), new vscode.Position(0,0))
