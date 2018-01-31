@@ -2,7 +2,6 @@
 import * as path from 'path'
 import * as vscode from 'vscode';
 import * as edit from 'vscode-extension-common'
-import { ExceptionInfo } from '_debugger';
 
 const gutterDecorationType = vscode.window.createTextEditorDecorationType({
     rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed
@@ -113,8 +112,7 @@ export function liveTransform(textEditor: vscode.TextEditor, selection:vscode.Se
 
     function linesFromSourceDocument(document:vscode.TextDocument) {
         const editor = visibleTextEditorFromDocument(document)
-        if (!editor) return edit.linesFromRange(document, edit.makeRangeDocument(document))
-        return edit.linesFromRanges(textEditor.document, editor.selections);
+        return edit.linesFromRanges(document, editor.selections);
     }
 
     function filterDocument(document, filter:string) {
@@ -164,9 +162,12 @@ export function liveTransform(textEditor: vscode.TextEditor, selection:vscode.Se
                 documentToDocumentTransform(lastActiveSourceDocument, targetDocument)
             })            
             vscode.window.onDidChangeActiveTextEditor(event=> {
+                // when switching documents a selection change event is also sent most of the time
+                // if we update the document on this event, the selections will be wrong
+                // TODO - need to investigate work arounds to make the behavior more reliable
+                // but we are impared by vscodes unreliable behavior in this case
                 if (event.document !== targetDocument)
                     lastActiveSourceDocument = event.document
-                documentToDocumentTransform(lastActiveSourceDocument, targetDocument)
             })
             return editor;
         });
