@@ -96,6 +96,10 @@ function openShowDocumentWithLines(textEditor: vscode.TextEditor, filteredLines)
 }
 
 export function liveTransform(textEditor: vscode.TextEditor, selection:vscode.Selection) {
+    const DEFAULT_SCRIPT = "// lines, selections, document\n" +
+                           "lines.filter(line=>/./i.test(line))\n" +
+                           "     .map(line=>line)\n"
+
     const FILTER_SEPARATOR = '------------------------------------------------------------------------'
 
     function filterRange(document:vscode.TextDocument) {
@@ -147,10 +151,10 @@ export function liveTransform(textEditor: vscode.TextEditor, selection:vscode.Se
     }
 
     let lastActiveSourceDocument = vscode.window.activeTextEditor.document
-    return edit.openShowDocument(originName(textEditor), '\n' + FILTER_SEPARATOR + '\n', false)
+    return edit.openShowDocument('Live-Transform.txt', DEFAULT_SCRIPT + FILTER_SEPARATOR + '\n', false)
         .then(editor => {
             // reset selection.  Otherwise all replaced text is highlighted in selection
-            editor.selection = new vscode.Selection(new vscode.Position(0,0), new vscode.Position(0,0))
+            editor.selection = new vscode.Selection(new vscode.Position(1,21), new vscode.Position(1,21))
 
             const targetDocument = editor.document
             vscode.workspace.onDidChangeTextDocument(event=> {
