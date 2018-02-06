@@ -4,11 +4,13 @@ import * as vscode from 'vscode';
 import * as edit from 'vscode-extension-common'
 
 const DEFAULT_SCRIPT = "// lines, selections, document\n" +
-                       "lines.filter(line=>/./i.test(line))\n" +
-                       "     .map(line=>line)\n"
+                       "FILTER:\n"
 
 const FILTER_SEPARATOR = '------------------------------------------------------------------------'
 
+interface TransformFilter {
+    filter: RegExp
+}
 
 function filterRange(document:vscode.TextDocument) {
     const lines = edit.linesFromRange(document, edit.makeRangeDocument(document))
@@ -16,10 +18,18 @@ function filterRange(document:vscode.TextDocument) {
     return new vscode.Range(new vscode.Position(0,0), new vscode.Position(separatorLine, 0))
 }
 
+function extractTextBetweenDelimeters(text:string, begin:string, end:string) {
+    const beginIndex = text.search(begin) + begin.length;
+    const endIndex = text.indexOf(end, beginIndex)
+    return text.substring(beginIndex, endIndex)
+}
+
 function extractFilterFromDocument(document:vscode.TextDocument) {
     const range = filterRange(document)
-    const filterText = document.getText(filterRange(document)).trim()
-    return {filterText, separatorLine: range.end.line + 1}
+    const filterText = document.getText(filterRange(document))
+    const filter = extractTextBetweenDelimeters(filterText, 'FILTER:', '\r')
+
+    return {transformFilter: {filter: new RegExp(filter)}, separatorLine: range.end.line + 1}
 }
 
 function linesFromSourceDocument(document:vscode.TextDocument) {
@@ -37,15 +47,16 @@ function selectionsFromDocument(document:vscode.TextDocument) {
     return editor.selections.map(selection=>document.getText(selection))
 }
 
-function filterDocument(textDocument, filter:string) {
+function filterDocument(textDocument, transformFilter:TransformFilter) {
     //if (typeof filterFn !== "function") return ''
-    const lines = linesFromSourceDocument(textDocument).map(line=>line.text)
+    //const lines = linesFromSourceDocument(textDocument).map(line=>line.text)
     const document = linesFromDocument(textDocument)
-    const selections = selectionsFromDocument(textDocument)
+                     .filter(line=>transformFilter.filter.test(line))
+    //const selections = selectionsFromDocument(textDocument)
     //const filterFn = eval(filter)
     let result = ''
     try {
-        result = eval(filter).reduce((prev, curr) => prev + '\n' + curr, '')
+        result = document.reduce((prev, curr) => prev + '\n' + curr, '')
     } catch (error) {
         result = error.message
     }
@@ -59,9 +70,9 @@ function filterDocument(textDocument, filter:string) {
 function documentToDocumentTransform(sourceDocument:vscode.TextDocument, targetDocument:vscode.TextDocument) {
     const targetEditor:vscode.TextEditor = edit.visibleTextEditorFromDocument(targetDocument)
     if (!targetEditor) return
-    const {filterText, separatorLine} = extractFilterFromDocument(targetDocument)
+    const {transformFilter, separatorLine} = extractFilterFromDocument(targetDocument)
     const allAfterFirstLine = edit.makeRangeFromLineToEnd(targetDocument, separatorLine)
-    edit.replace(targetEditor, allAfterFirstLine, filterDocument(sourceDocument, filterText))
+    edit.replace(targetEditor, allAfterFirstLine, filterDocument(sourceDocument, transformFilter))
     // reset selection.  Otherwise all replaced text is highlighted in selection
     //targetEditor.selection = new vscode.Selection(new vscode.Position(0,0), new vscode.Position(0,0))
 }
@@ -71,7 +82,7 @@ export function liveTransform(textEditor: vscode.TextEditor, selection:vscode.Se
     return edit.openShowDocument('Live-Transform.txt', DEFAULT_SCRIPT + FILTER_SEPARATOR + '\n', false)
         .then(editor => {
             // reset selection.  Otherwise all replaced text is highlighted in selection
-            editor.selection = new vscode.Selection(new vscode.Position(1,21), new vscode.Position(1,21))
+            editor.selection = new vscode.Selection(new vscode.Position(1,6), new vscode.Position(1,6))
 
             const targetDocument = editor.document
             vscode.workspace.onDidChangeTextDocument(event=> {
