@@ -2,14 +2,17 @@
 import * as path from 'path'
 import * as vscode from 'vscode';
 import * as edit from 'vscode-extension-common'
+import { expandRangeFullLineWidth } from 'vscode-extension-common';
 
 const DEFAULT_SCRIPT = "// lines, selections, document\n" +
-                       "FILTER:\n"
+                       "FILTER:\n" +
+                       "MAP:\n"
 
 const FILTER_SEPARATOR = '------------------------------------------------------------------------'
 
 interface TransformFilter {
     filter: RegExp
+    map: Function
 }
 
 function filterRange(document:vscode.TextDocument) {
@@ -24,12 +27,19 @@ function extractTextBetweenDelimeters(text:string, begin:string, end:string) {
     return text.substring(beginIndex, endIndex)
 }
 
+function evalFunctionExpression(expression:string):Function {
+    const expressionFn = '(line, regex)=>`' + expression + '`'
+    return eval(expressionFn)
+
+}
+
 function extractFilterFromDocument(document:vscode.TextDocument) {
     const range = filterRange(document)
     const filterText = document.getText(filterRange(document))
     const filter = extractTextBetweenDelimeters(filterText, 'FILTER:', '\r')
-
-    return {transformFilter: {filter: new RegExp(filter)}, separatorLine: range.end.line + 1}
+    const mapExpression = extractTextBetweenDelimeters(filterText, 'MAP:', '\r')
+    const mapFn = evalFunctionExpression(mapExpression)
+    return {transformFilter: {filter: new RegExp(filter), map: mapFn}, separatorLine: range.end.line + 1}
 }
 
 function linesFromSourceDocument(document:vscode.TextDocument) {
@@ -51,7 +61,9 @@ function filterDocument(textDocument, transformFilter:TransformFilter) {
     //if (typeof filterFn !== "function") return ''
     //const lines = linesFromSourceDocument(textDocument).map(line=>line.text)
     const document = linesFromDocument(textDocument)
-                     .filter(line=>transformFilter.filter.test(line))
+                     .map(line=>transformFilter.filter.exec(line))
+                     .filter(regex=>regex!=null)
+                     .map(regex=>transformFilter.map(regex[0], regex))
     //const selections = selectionsFromDocument(textDocument)
     //const filterFn = eval(filter)
     let result = ''
