@@ -6,6 +6,7 @@ import * as edit from 'vscode-extension-common'
  * TODO - planned features:
  * - unique selections as new document
  * - unique words as new document
+ * - filter sections based on text found in levels to the right
  * - count unique lines to new document
  * - trim lines
  * - trim identical parts of lines
@@ -22,6 +23,7 @@ import * as edit from 'vscode-extension-common'
  * - escapes and unescapes
  * - hex/bin/dec
  * - wrap at designated length
+ * - selection as single JSON string
  */
 
 interface LinkedDocument {
@@ -31,19 +33,6 @@ interface LinkedDocument {
 
 export function activate(context: vscode.ExtensionContext) {
     let disposable;
-
-    const linkedDocuments= new Array<LinkedDocument>();
-    // Attempt to link to original lines of source document
-    // however, we don't have access to the decorations we create
-    // we would have to maintain our own mapping.  That is a bit painful, may consider again later.
-    //
-    // disposable = vscode.languages.registerDefinitionProvider({scheme: 'untitled'}, {
-    //     provideDefinition(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken) {
-    //         const linkedDocument = linkedDocuments.find(linkedDocument => linkedDocument.target === document);
-    //         return new vscode.Location(linkedDocument.source.uri,  position);
-    //     }
-    // }); 
-    // context.subscriptions.push(disposable);
 
     disposable = vscode.commands.registerCommand('dakara-transformer.sortLines', () => {
         const textEditor = vscode.window.activeTextEditor;
@@ -91,7 +80,13 @@ export function activate(context: vscode.ExtensionContext) {
         const textEditor = vscode.window.activeTextEditor;
         const selection = textEditor.selection;
         transforms.filterLinesToNewDocument(textEditor, selection)
-            .then(untitledDocument => linkedDocuments.push({source:textEditor.document, target:untitledDocument.document}));
+    });
+    context.subscriptions.push(disposable);
+
+    disposable = vscode.commands.registerCommand('dakara-transformer.filterAdvancedAsNewDocument', () => {
+        const textEditor = vscode.window.activeTextEditor;
+        const selection = textEditor.selection;
+        transforms.filterLinesAdvancedToNewDocument(textEditor, selection)
     });
     context.subscriptions.push(disposable);
 
