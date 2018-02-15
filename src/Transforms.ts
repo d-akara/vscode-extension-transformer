@@ -86,6 +86,36 @@ export function filterLinesToNewDocument(textEditor: vscode.TextEditor, selectio
         })
 }
 
+/**
+ * TODO
+ * - add option for number of surrounding context lines
+ * - add option to include parent line
+ * - add option to include only lines of same level in folding region
+ * - add a new picker to set all these options
+ * 
+ * @param textEditor 
+ * @param selection 
+ */
+export function filterLinesAdvancedToNewDocument(textEditor: vscode.TextEditor, selection:vscode.Selection) {
+    const selectedText = edit.textOfLineSelectionOrWordAtCursor(textEditor.document, selection);
+    // If we have multiple lines selected, use that as source to filter, else the entire document
+    const range = selection.isSingleLine ? edit.makeRangeDocument(textEditor.document) : selection;
+    const tabSize = +textEditor.options.tabSize;
+    return edit.promptForFilterExpression(selectedText)
+        .then(fnFilter => {
+            const filteredLines = edit.filterLines(textEditor.document, range, fnFilter)
+                                      .map(line=>edit.findAllLinesSameFoldingRegion(textEditor.document,line.lineNumber, tabSize))
+                                      .reduce((prevLines, currLines) => prevLines.concat(currLines))
+                                      .sort((l1,l2)=>l1.lineNumber-l2.lineNumber)
+                                      .reduce((a,b)=>{ // remove duplicates
+                                          if (a.indexOf(b) < 0) a.push(b)
+                                          return a
+                                       },[])
+            
+            return openShowDocumentWithLines(textEditor, filteredLines)
+        })
+}
+
 function openShowDocumentWithLines(textEditor: vscode.TextEditor, filteredLines) {
     const content = filteredLines.map(line => line.text).reduce((prev, curr) => prev + "\n" + curr);
     return edit.openShowDocument(originName(textEditor), content)
