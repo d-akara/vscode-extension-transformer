@@ -86,24 +86,29 @@ export function filterLinesToNewDocument(textEditor: vscode.TextEditor, selectio
         })
 }
 
+type FilterContextOptions = {sectionByLevel?:number,
+                             sectionByLevelRegex?:RegExp,
+                             surroundingLines?:number,
+                             surroundingRegex?:RegExp}
+
 /**
  * TODO
- * - add option for number of surrounding context lines
- * - add option to include parent line
- * - add option to include only lines of same level in folding region
+ * - add option for number of surrounding context lines (+linesUp/-linesDown)[numberLines] [optional regex]
+ * - add option to include [levels from current] [regex]
+ * - add option to include line numbers, original matches vs context matches.
  * - add a new picker to set all these options
  * 
  * @param textEditor 
  * @param selection 
  */
-export function filterLinesAdvancedToNewDocument(textEditor: vscode.TextEditor, selection:vscode.Selection) {
+export function filterLinesWithContextToNewDocument(textEditor: vscode.TextEditor, selection:vscode.Selection) {
     const selectedText = edit.textOfLineSelectionOrWordAtCursor(textEditor.document, selection);
     // If we have multiple lines selected, use that as source to filter, else the entire document
     const range = selection.isSingleLine ? edit.makeRangeDocument(textEditor.document) : selection;
     return edit.promptForFilterExpression(selectedText)
     .then(fnFilter => {
         const filteredLines = edit.filterLines(textEditor.document, range, fnFilter)
-        .map(line=>addContextLines(textEditor, line, {foldingRegion:false, parentLine:false, surroundingLines: 1}))
+        .map(line=>addContextLines(textEditor, line, {sectionByLevel:0, surroundingLines: 0}))
         .reduce((prevLines, currLines) => prevLines.concat(currLines))
         .sort((l1,l2)=>l1.lineNumber-l2.lineNumber)
         .reduce((a,b)=>{ // remove duplicates
@@ -115,13 +120,13 @@ export function filterLinesAdvancedToNewDocument(textEditor: vscode.TextEditor, 
     })
 }
 
-function addContextLines(textEditor: vscode.TextEditor, line:vscode.TextLine, options: {foldingRegion?:boolean, parentLine?:boolean, surroundingLines?:number}) {
+function addContextLines(textEditor: vscode.TextEditor, line:vscode.TextLine, options: FilterContextOptions) {
     const tabSize = +textEditor.options.tabSize;
     let addedContextLines:vscode.TextLine[] = []
-    if (options.foldingRegion) 
-        addedContextLines = addedContextLines.concat(edit.findAllLinesSameFoldingRegion(textEditor.document,line.lineNumber, tabSize));
-    if (options.parentLine)
-        addedContextLines.push(edit.findNextLineUpSpacedLeft(textEditor.document, line.lineNumber, tabSize))
+    if (options.sectionByLevel !== undefined) {
+        const range = edit.makeRangeFromFoldingRegionRelativeLevel(textEditor.document,line.lineNumber,options.sectionByLevel, tabSize)
+        addedContextLines = addedContextLines.concat(edit.linesFromRange(textEditor.document, range))
+    }
     if (options.surroundingLines)
         addedContextLines = addedContextLines.concat(edit.collectLines(textEditor.document, Math.max(0, line.lineNumber - options.surroundingLines), Math.min(textEditor.document.lineCount, line.lineNumber + options.surroundingLines)))
     // include the original filtered line

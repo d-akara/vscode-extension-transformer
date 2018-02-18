@@ -7,7 +7,7 @@ import * as edit from 'vscode-extension-common'
  * - unique selections as new document
  * - unique words as new document
  * - filter sections based on text found in levels to the right
- * - count unique lines to new document
+ * - count unique lines to new document, duplicates
  * - trim lines
  * - trim identical parts of lines
  * - sort folding regions / sort sections as determined by each cursor location
@@ -83,10 +83,10 @@ export function activate(context: vscode.ExtensionContext) {
     });
     context.subscriptions.push(disposable);
 
-    disposable = vscode.commands.registerCommand('dakara-transformer.filterAdvancedAsNewDocument', () => {
+    disposable = vscode.commands.registerCommand('dakara-transformer.filterContextAsNewDocument', () => {
         const textEditor = vscode.window.activeTextEditor;
         const selection = textEditor.selection;
-        transforms.filterLinesAdvancedToNewDocument(textEditor, selection)
+        transforms.filterLinesWithContextToNewDocument(textEditor, selection)
     });
     context.subscriptions.push(disposable);
 
