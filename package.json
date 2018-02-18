@@ -23,7 +23,7 @@
         "onCommand:dakara-transformer.copyToNewDocument",
         "onCommand:dakara-transformer.filter",
         "onCommand:dakara-transformer.filterAsNewDocument",
-        "onCommand:dakara-transformer.filterAdvancedAsNewDocument",
+        "onCommand:dakara-transformer.filterContextAsNewDocument",
         "onCommand:dakara-transformer.liveTransform",
         "onCommand:dakara-transformer.linesAsJSON",
         "onCommand:dakara-transformer.reverseLines",
@@ -47,8 +47,8 @@
                 "category": "Transform"
             },
             {
-                "command": "dakara-transformer.filterAdvancedAsNewDocument",
-                "title": "Filter Lines Advanced As New Document",
+                "command": "dakara-transformer.filterContextAsNewDocument",
+                "title": "Filter Lines With Context As New Document",
                 "category": "Transform"
             },
             {
