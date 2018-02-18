@@ -105,19 +105,45 @@ export function filterLinesWithContextToNewDocument(textEditor: vscode.TextEdito
     const selectedText = edit.textOfLineSelectionOrWordAtCursor(textEditor.document, selection);
     // If we have multiple lines selected, use that as source to filter, else the entire document
     const range = selection.isSingleLine ? edit.makeRangeDocument(textEditor.document) : selection;
-    return edit.promptForFilterExpression(selectedText)
-    .then(fnFilter => {
-        const filteredLines = edit.filterLines(textEditor.document, range, fnFilter)
-        .map(line=>addContextLines(textEditor, line, {sectionByLevel:0, surroundingLines: 0}))
-        .reduce((prevLines, currLines) => prevLines.concat(currLines))
-        .sort((l1,l2)=>l1.lineNumber-l2.lineNumber)
-        .reduce((a,b)=>{ // remove duplicates
-            if (a.indexOf(b) < 0) a.push(b)
-            return a
-        },[])
+
+
+    edit.promptOptions([
+        {
+            label: 'regex filter', description: 'filter using regex', value: selectedText, input: {prompt:'enter regex'}
+        },
+        {
+            label: 'surrounding context', description: 'filter using regex'
+        },
+        {
+            label: 'more', description: 'more stuff',
+            children: [
+                {
+                    label: 'child 1', description: 'children 1', 
+                },
+                {
+                    label: 'child 2', description: 'children 2',
+                    children: ()=>new Promise(resolve=>{
+                        resolve([{label: 'child 3', description: 'children 3'}])
+                    })
+                }
+            ]
+        }
+    ], pickAction=>console.log('value changed', pickAction))
+    .then(result=>console.log('picker result', result))
+
+    // return edit.promptForFilterExpression(selectedText)
+    // .then(fnFilter => {
+    //     const filteredLines = edit.filterLines(textEditor.document, range, fnFilter)
+    //     .map(line=>addContextLines(textEditor, line, {sectionByLevel:0, surroundingLines: 0}))
+    //     .reduce((prevLines, currLines) => prevLines.concat(currLines))
+    //     .sort((l1,l2)=>l1.lineNumber-l2.lineNumber)
+    //     .reduce((a,b)=>{ // remove duplicates
+    //         if (a.indexOf(b) < 0) a.push(b)
+    //         return a
+    //     },[])
         
-        return openShowDocumentWithLines(textEditor, filteredLines)
-    })
+    //     return openShowDocumentWithLines(textEditor, filteredLines)
+    // })
 }
 
 function addContextLines(textEditor: vscode.TextEditor, line:vscode.TextLine, options: FilterContextOptions) {
