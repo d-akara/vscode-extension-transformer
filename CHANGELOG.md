@@ -1,3 +1,5 @@
+## [1.4.0]
+- Fixed bug in filtering commands which prevented filtering properly on selections
 ## [1.3.2]
 - Added `Lines As JSON` command which Converts each line to a JSON string.  Useful for easily creating snippet bodies from selected text
 ## [1.2.0]
