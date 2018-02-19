@@ -3,6 +3,7 @@ import * as path from 'path'
 import * as vscode from 'vscode';
 import * as edit from 'vscode-extension-common'
 import * as LiveTransformation from './liveTransform/LiveTransform'
+import { start } from 'repl';
 
 const gutterDecorationType = vscode.window.createTextEditorDecorationType({
     rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed
@@ -106,53 +107,62 @@ export function filterLinesWithContextToNewDocument(textEditor: vscode.TextEdito
     // If we have multiple lines selected, use that as source to filter, else the entire document
     const range = selection.isSingleLine ? edit.makeRangeDocument(textEditor.document) : selection;
 
-    const regexOption       = edit.makeOption({label: 'regex filter', description: 'filter using regex', value: selectedText, input: {}})
-    const surroundOption    = edit.makeOption({label: 'surrounding context', description: 'filter using regex'})
-    const lineNumberEnabled = edit.makeOption({label: 'enable', description: 'include line numbers in output'})
-    const lineNumberDisabled = edit.makeOption({label: 'disable', description: 'do not include line numbers in output'})
-    const lineNumbersOption = edit.makeOption({label: 'line numbers', description: 'include line numbers in output', value: lineNumberDisabled, children: [lineNumberEnabled, lineNumberDisabled]})
+    const regexOption        = edit.makeOption({label: 'Filter', description: 'specify filter to select lines', value: selectedText, input: {prompt: 'Enter regex or [space] + literal', placeHolder:'abc.*'}})
+    const surroundOption     = edit.makeOption({label: 'Surrounding Lines', description: 'add nearby lines', input:{prompt:'[# lines] [optional regex]', placeHolder:'2 abc.*'}})
+    const levelsOption       = edit.makeOption({label: 'Parent Levels', description: 'add lines by relative section level', input:{prompt:'[# parent levels] [optional regex]', placeHolder:'2 abc.*'}})
+    const lineNumbersOption  = edit.makeOption({label: 'Line Numbers', description: 'include line numbers in output', value: false})
     edit.promptOptions([
         regexOption,
         surroundOption,
+        levelsOption,
         lineNumbersOption
-    ], pickAction=>console.log('value changed', pickAction))
-    .then(result=>console.log('picker result', result))
-
-    // return edit.promptForFilterExpression(selectedText)
-    // .then(fnFilter => {
-    //     const filteredLines = edit.filterLines(textEditor.document, range, fnFilter)
-    //     .map(line=>addContextLines(textEditor, line, {sectionByLevel:0, surroundingLines: 0}))
-    //     .reduce((prevLines, currLines) => prevLines.concat(currLines))
-    //     .sort((l1,l2)=>l1.lineNumber-l2.lineNumber)
-    //     .reduce((a,b)=>{ // remove duplicates
-    //         if (a.indexOf(b) < 0) a.push(b)
-    //         return a
-    //     },[])
+    ], (item, action)=>{
+        if (edit.QuickPickActionType.INPUT == action) {
+            // don't process realtime input changes on large documents
+            if (range.end.line - range.start.line > 10000) return
+        }
+        const startTime = new Date().getMilliseconds()
+        const fnFilter = edit.makeFilterFunction(regexOption.value)
+        const filteredLines = edit.filterLines(textEditor.document, range, fnFilter)
+        // TODO need to optimize the following for large documents
+        .map(line=>addContextLines(textEditor, line, {sectionByLevel:+levelsOption.value, surroundingLines: +surroundOption.value}))
+        .reduce((prevLines, currLines) => prevLines.concat(currLines), [])
+        .sort((l1,l2)=>l1.lineNumber-l2.lineNumber)
+        .reduce((a,b)=>{ // remove duplicates
+            if (a.indexOf(b) < 0) a.push(b)
+            return a
+        },[] as vscode.TextLine[])
         
-    //     return openShowDocumentWithLines(textEditor, filteredLines)
-    // })
+        //console.log('changed', item?item.label:'', action, (new Date().getMilliseconds()) - startTime)
+        openShowDocumentWithLines(textEditor, filteredLines)        
+    })
 }
 
 function addContextLines(textEditor: vscode.TextEditor, line:vscode.TextLine, options: FilterContextOptions) {
     const tabSize = +textEditor.options.tabSize;
     let addedContextLines:vscode.TextLine[] = []
-    if (options.sectionByLevel !== undefined) {
+    if (!isNaN(options.sectionByLevel)) {
         const range = edit.makeRangeFromFoldingRegionRelativeLevel(textEditor.document,line.lineNumber,options.sectionByLevel, tabSize)
         addedContextLines = addedContextLines.concat(edit.linesFromRange(textEditor.document, range))
     }
     if (options.surroundingLines)
-        addedContextLines = addedContextLines.concat(edit.collectLines(textEditor.document, Math.max(0, line.lineNumber - options.surroundingLines), Math.min(textEditor.document.lineCount, line.lineNumber + options.surroundingLines)))
+        
+    addedContextLines = addedContextLines.concat(edit.collectLines(textEditor.document, Math.max(0, line.lineNumber - options.surroundingLines), Math.min(textEditor.document.lineCount, line.lineNumber + options.surroundingLines)))
     // include the original filtered line
     addedContextLines.push(line);
     return addedContextLines
 }
 
-function openShowDocumentWithLines(textEditor: vscode.TextEditor, filteredLines) {
-    const content = filteredLines.map(line => line.text).reduce((prev, curr) => prev + "\n" + curr);
+function openShowDocumentWithLines(textEditor: vscode.TextEditor, filteredLines:vscode.TextLine[]) {
+    const content = filteredLines.map(line => line.text).reduce((prev, curr) => prev + "\n" + curr, '');
     return edit.openShowDocument(originName(textEditor), content)
         .then(editor => {
-            const decorations = filteredLines.map((line, index) => edit.createGutterDecorator(index, ': ' + (line.lineNumber + 1), '50px'));
-            editor.setDecorations(gutterDecorationType, decorations);
+            if (filteredLines.length < 1000) {
+                const decorations = filteredLines.map((line, index) => edit.createGutterDecorator(index, ': ' + (line.lineNumber + 1), '50px'));
+                editor.setDecorations(gutterDecorationType, decorations);
+            } else {
+                editor.setDecorations(gutterDecorationType, [])
+            }
             return editor;
         });
 }
