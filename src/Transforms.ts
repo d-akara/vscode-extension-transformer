@@ -106,28 +106,15 @@ export function filterLinesWithContextToNewDocument(textEditor: vscode.TextEdito
     // If we have multiple lines selected, use that as source to filter, else the entire document
     const range = selection.isSingleLine ? edit.makeRangeDocument(textEditor.document) : selection;
 
-
+    const regexOption       = edit.makeOption({label: 'regex filter', description: 'filter using regex', value: selectedText, input: {}})
+    const surroundOption    = edit.makeOption({label: 'surrounding context', description: 'filter using regex'})
+    const lineNumberEnabled = edit.makeOption({label: 'enable', description: 'include line numbers in output'})
+    const lineNumberDisabled = edit.makeOption({label: 'disable', description: 'do not include line numbers in output'})
+    const lineNumbersOption = edit.makeOption({label: 'line numbers', description: 'include line numbers in output', value: lineNumberDisabled, children: [lineNumberEnabled, lineNumberDisabled]})
     edit.promptOptions([
-        {
-            label: 'regex filter', description: 'filter using regex', value: selectedText, input: {prompt:'enter regex'}
-        },
-        {
-            label: 'surrounding context', description: 'filter using regex'
-        },
-        {
-            label: 'more', description: 'more stuff',
-            children: [
-                {
-                    label: 'child 1', description: 'children 1', 
-                },
-                {
-                    label: 'child 2', description: 'children 2',
-                    children: ()=>new Promise(resolve=>{
-                        resolve([{label: 'child 3', description: 'children 3'}])
-                    })
-                }
-            ]
-        }
+        regexOption,
+        surroundOption,
+        lineNumbersOption
     ], pickAction=>console.log('value changed', pickAction))
     .then(result=>console.log('picker result', result))
 
