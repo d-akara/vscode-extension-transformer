@@ -92,6 +92,13 @@ type FilterContextOptions = {sectionByLevel?:number,
                              surroundingLines?:number,
                              surroundingRegex?:RegExp}
 
+function parseNumberAndRegex(value:string) {
+    if (!value) return {number: NaN, regex:null}
+    const parts = value.split(' ', 2)
+    if (parts.length===1) return {number:+value, regex:null}
+    return {number:+parts[0], regex:new RegExp(parts[1], 'i')}
+}
+
 /**
  * TODO
  * - add option for number of surrounding context lines (+linesUp/-linesDown)[numberLines] [optional regex]
@@ -121,11 +128,18 @@ export function filterLinesWithContextToNewDocument(textEditor: vscode.TextEdito
             // don't process realtime input changes on large documents
             if (range.end.line - range.start.line > 10000) return
         }
+        const contextOptions:FilterContextOptions = {
+            surroundingLines: parseNumberAndRegex(surroundOption.value).number,
+            surroundingRegex: parseNumberAndRegex(surroundOption.value).regex,
+            sectionByLevel: parseNumberAndRegex(levelsOption.value).number,
+            sectionByLevelRegex: parseNumberAndRegex(levelsOption.value).regex
+        }
+        
         const startTime = new Date().getMilliseconds()
         const fnFilter = edit.makeFilterFunction(regexOption.value)
         const filteredLines = edit.filterLines(textEditor.document, range, fnFilter)
         // TODO need to optimize the following for large documents
-        .map(line=>addContextLines(textEditor, line, {sectionByLevel:+levelsOption.value, surroundingLines: +surroundOption.value}))
+        .map(line=>addContextLines(textEditor, line, contextOptions))
         .reduce((prevLines, currLines) => prevLines.concat(currLines), [])
         .sort((l1,l2)=>l1.lineNumber-l2.lineNumber)
         .reduce((a,b)=>{ // remove duplicates
@@ -141,13 +155,22 @@ export function filterLinesWithContextToNewDocument(textEditor: vscode.TextEdito
 function addContextLines(textEditor: vscode.TextEditor, line:vscode.TextLine, options: FilterContextOptions) {
     const tabSize = +textEditor.options.tabSize;
     let addedContextLines:vscode.TextLine[] = []
+
     if (!isNaN(options.sectionByLevel)) {
         const range = edit.makeRangeFromFoldingRegionRelativeLevel(textEditor.document,line.lineNumber,options.sectionByLevel, tabSize)
-        addedContextLines = addedContextLines.concat(edit.linesFromRange(textEditor.document, range))
+        let lines = edit.linesFromRange(textEditor.document, range)
+        if (options.sectionByLevelRegex)
+            lines = lines.filter(line=>options.sectionByLevelRegex.test(line.text))
+        addedContextLines = addedContextLines.concat(lines)
     }
-    if (options.surroundingLines)
+
+    if (options.surroundingLines) {
+        let lines = edit.collectLines(textEditor.document, Math.max(0, line.lineNumber - options.surroundingLines), Math.min(textEditor.document.lineCount, line.lineNumber + options.surroundingLines))
+        if (options.surroundingRegex)
+            lines = lines.filter(line=>options.surroundingRegex.test(line.text))
+        addedContextLines = addedContextLines.concat(lines)
+    }
         
-    addedContextLines = addedContextLines.concat(edit.collectLines(textEditor.document, Math.max(0, line.lineNumber - options.surroundingLines), Math.min(textEditor.document.lineCount, line.lineNumber + options.surroundingLines)))
     // include the original filtered line
     addedContextLines.push(line);
     return addedContextLines
