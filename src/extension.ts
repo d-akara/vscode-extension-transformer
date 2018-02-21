@@ -79,13 +79,6 @@ export function activate(context: vscode.ExtensionContext) {
     disposable = vscode.commands.registerCommand('dakara-transformer.filterAsNewDocument', () => {
         const textEditor = vscode.window.activeTextEditor;
         const selection = textEditor.selection;
-        transforms.filterLinesToNewDocument(textEditor, selection)
-    });
-    context.subscriptions.push(disposable);
-
-    disposable = vscode.commands.registerCommand('dakara-transformer.filterContextAsNewDocument', () => {
-        const textEditor = vscode.window.activeTextEditor;
-        const selection = textEditor.selection;
         transforms.filterLinesWithContextToNewDocument(textEditor, selection)
     });
     context.subscriptions.push(disposable);

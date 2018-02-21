@@ -99,6 +99,10 @@ function parseNumberAndRegex(value:string) {
     return {number:+parts[0], regex:new RegExp(parts[1], 'i')}
 }
 
+function isFilterContextOptionSet(options:FilterContextOptions) {
+    return !isNaN(options.sectionByLevel) || !isNaN(options.surroundingLines)
+}
+
 /**
  * TODO
  * - add option for number of surrounding context lines (+linesUp/-linesDown)[numberLines] [optional regex]
@@ -117,12 +121,13 @@ export function filterLinesWithContextToNewDocument(textEditor: vscode.TextEdito
     const regexOption        = edit.makeOption({label: 'Filter', description: 'specify filter to select lines', value: selectedText, input: {prompt: 'Enter regex or [space] + literal', placeHolder:'abc.*'}})
     const surroundOption     = edit.makeOption({label: 'Surrounding Lines', description: 'add nearby lines', input:{prompt:'[# lines] [optional regex]', placeHolder:'2 abc.*'}})
     const levelsOption       = edit.makeOption({label: 'Parent Levels', description: 'add lines by relative section level', input:{prompt:'[# parent levels] [optional regex]', placeHolder:'2 abc.*'}})
-    const lineNumbersOption  = edit.makeOption({label: 'Line Numbers', description: 'include line numbers in output', value: false})
+    // TODO
+    //const lineNumbersOption  = edit.makeOption({label: 'Line Numbers', description: 'include line numbers in output', value: false})
     edit.promptOptions([
         regexOption,
         surroundOption,
         levelsOption,
-        lineNumbersOption
+        //lineNumbersOption
     ], (item, action)=>{
         if (edit.QuickPickActionType.INPUT == action) {
             // don't process realtime input changes on large documents
@@ -137,15 +142,17 @@ export function filterLinesWithContextToNewDocument(textEditor: vscode.TextEdito
         
         const startTime = new Date().getMilliseconds()
         const fnFilter = edit.makeFilterFunction(regexOption.value)
-        const filteredLines = edit.filterLines(textEditor.document, range, fnFilter)
+        let filteredLines = edit.filterLines(textEditor.document, range, fnFilter)
         // TODO need to optimize the following for large documents
-        .map(line=>addContextLines(textEditor, line, contextOptions))
-        .reduce((prevLines, currLines) => prevLines.concat(currLines), [])
-        .sort((l1,l2)=>l1.lineNumber-l2.lineNumber)
-        .reduce((a,b)=>{ // remove duplicates
-            if (a.indexOf(b) < 0) a.push(b)
-            return a
-        },[] as vscode.TextLine[])
+        if (isFilterContextOptionSet(contextOptions)) {
+            filteredLines = filteredLines.map(line=>addContextLines(textEditor, line, contextOptions))
+                .reduce((prevLines, currLines) => prevLines.concat(currLines))
+                .sort((l1,l2)=>l1.lineNumber-l2.lineNumber)
+                .reduce((a,b)=>{ // remove duplicates
+                    if (a.indexOf(b) < 0) a.push(b)
+                    return a
+                },[] as vscode.TextLine[])
+        }
         
         //console.log('changed', item?item.label:'', action, (new Date().getMilliseconds()) - startTime)
         openShowDocumentWithLines(textEditor, filteredLines)        
@@ -177,7 +184,9 @@ function addContextLines(textEditor: vscode.TextEditor, line:vscode.TextLine, op
 }
 
 function openShowDocumentWithLines(textEditor: vscode.TextEditor, filteredLines:vscode.TextLine[]) {
-    const content = filteredLines.map(line => line.text).reduce((prev, curr) => prev + "\n" + curr, '');
+    let content = ''
+    if (filteredLines.length)
+        content = filteredLines.map(line => line.text).reduce((prev, curr) => prev + "\n" + curr);
     return edit.openShowDocument(originName(textEditor), content)
         .then(editor => {
             if (filteredLines.length < 1000) {
