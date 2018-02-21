@@ -43,6 +43,7 @@
 - Gutter decorators show original line number from original document
 - Operates on selection or entire document if no selection
 - Filter using regex or literal
+- Add lines relative to filtered lines by count and regular expression match
 
 ![ScreenShot](/readme-images/filter-new-document.gif)
 
