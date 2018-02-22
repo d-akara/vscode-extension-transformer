@@ -2,6 +2,8 @@
 - Enhanced `Filter Lines As New Document` command
   - Realtime filtering as you type for smaller documents
   - Add contextual lines relative to filtered lines to output
+- New document commands now create document title related to original instead of generic untitled
+- Updated some command descriptions and titles
 - Fixed bug in filtering commands which prevented filtering properly on selections
 ## 1.3.2
 - Added `Lines As JSON` command which Converts each line to a JSON string.  Useful for easily creating snippet bodies from selected text

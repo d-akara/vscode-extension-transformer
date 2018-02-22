@@ -42,17 +42,12 @@
             },
             {
                 "command": "dakara-transformer.filterAsNewDocument",
-                "title": "Filter Lines As New Document",
-                "category": "Transform"
-            },
-            {
-                "command": "dakara-transformer.liveTransform",
-                "title": "Filter Document Live",
+                "title": "Filter Lines As New Document...",
                 "category": "Transform"
             },
             {
                 "command": "dakara-transformer.filter",
-                "title": "Filter Lines",
+                "title": "Filter Lines...",
                 "category": "Transform"
             },
             {
