@@ -8,17 +8,18 @@ const DEFAULT_SCRIPT = "// lines, selections, document\n" +
                        "FILTER:\n" +
                        "MAP:\n"
 
-const FILTER_SEPARATOR = '------------------------------------------------------------------------'
+const CONTEXT_SEPARATOR = '------------------------------------------------------------------------'
 
-interface TransformFilter {
-    filter: RegExp
-    map: Function
+function makeScriptRange(document:vscode.TextDocument) {
+    const lines = edit.linesFromRange(document, edit.makeRangeDocument(document))
+    const separatorLine = lines.find(line=>line.text===CONTEXT_SEPARATOR).lineNumber
+    return new vscode.Range(new vscode.Position(0,0), new vscode.Position(separatorLine, 0))
 }
 
-function filterRange(document:vscode.TextDocument) {
+function makeOutputRange(document:vscode.TextDocument) {
     const lines = edit.linesFromRange(document, edit.makeRangeDocument(document))
-    const separatorLine = lines.find(line=>line.text===FILTER_SEPARATOR).lineNumber
-    return new vscode.Range(new vscode.Position(0,0), new vscode.Position(separatorLine, 0))
+    const separatorLine = lines.find(line=>line.text===CONTEXT_SEPARATOR).lineNumber
+    return edit.makeRangeFromLineToEnd(document, separatorLine + 1)
 }
 
 function extractTextBetweenDelimeters(text:string, begin:string, end:string) {
@@ -31,15 +32,6 @@ function evalFunctionExpression(expression:string):Function {
     const expressionFn = '(line, regex)=>`' + expression + '`'
     return eval(expressionFn)
 
-}
-
-function extractFilterFromDocument(document:vscode.TextDocument) {
-    const range = filterRange(document)
-    const filterText = document.getText(filterRange(document))
-    const filter = extractTextBetweenDelimeters(filterText, 'FILTER:', '\r')
-    const mapExpression = extractTextBetweenDelimeters(filterText, 'MAP:', '\r')
-    const mapFn = evalFunctionExpression(mapExpression)
-    return {transformFilter: {filter: new RegExp(filter), map: mapFn}, separatorLine: range.end.line + 1}
 }
 
 function linesFromSourceDocument(document:vscode.TextDocument) {
@@ -57,43 +49,19 @@ function selectionsFromDocument(document:vscode.TextDocument) {
     return editor.selections.map(selection=>document.getText(selection))
 }
 
-function filterDocument(textDocument, transformFilter:TransformFilter) {
-    //if (typeof filterFn !== "function") return ''
-    //const lines = linesFromSourceDocument(textDocument).map(line=>line.text)
-    const document = linesFromDocument(textDocument)
-                     .map(line=>transformFilter.filter.exec(line))
-                     .filter(regex=>regex!=null)
-                     .map(regex=>transformFilter.map(regex[0], regex))
-    //const selections = selectionsFromDocument(textDocument)
-    //const filterFn = eval(filter)
-    let result = ''
-    try {
-        result = document.reduce((prev, curr) => prev + '\n' + curr, '')
-    } catch (error) {
-        result = error.message
-    }
-    
-    return result;
-    // return edit.filterLines(document, edit.makeRangeDocument(document), filterFn)
-    //     .map(line => line.text)
-    //     .reduce((prev, curr) => prev + '\n' + curr, '')
-}
-const token = {internal:false}
-export function documentToDocumentTransform(event:edit.LiveDocumentViewEvent) {
-    token.internal = true;
-    console.log(event.eventType, event.sourceDocument.fileName, event.sourceOfEventIsView)
+
+export function documentToDocumentTransform(update:edit.LiveViewUpdater, event:edit.LiveDocumentViewEvent) {
+    //console.log(event.eventType, event.sourceDocument.fileName, event.sourceOfEventIsView)
     const targetDocument = event.viewEditor.document;
-    //const {transformFilter, separatorLine} = extractFilterFromDocument(targetDocument)
-    //const allAfterFirstLine = edit.makeRangeFromLineToEnd(targetDocument, separatorLine)
-    if (!event.sourceOfEventIsView)
-        edit.replace(event.viewEditor, edit.makeRangeDocument(targetDocument), event.sourceDocument.getText(edit.makeRangeDocument(event.sourceDocument)))
-    // reset selection.  Otherwise all replaced text is highlighted in selection
-    //targetEditor.selection = new vscode.Selection(new vscode.Position(0,0), new vscode.Position(0,0))
+    const scriptRange = makeScriptRange(targetDocument)
+    const outputRange = makeOutputRange(targetDocument)
+    //if (event.eventType === 'edit')
+        update(event.viewEditor, outputRange, event.sourceDocument.getText(edit.makeRangeDocument(event.sourceDocument)))
 }
 
 
 export function liveDocumentView() {
     let lastActiveSourceDocument = vscode.window.activeTextEditor.document
-    return edit.liveDocumentView(token, 'Live-Transform.txt', DEFAULT_SCRIPT + FILTER_SEPARATOR + '\n', filterRange, documentToDocumentTransform)
+    return edit.liveDocumentView('Live-Transform.txt', DEFAULT_SCRIPT + CONTEXT_SEPARATOR + '\n', documentToDocumentTransform)
    
 }
