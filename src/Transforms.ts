@@ -200,7 +200,7 @@ function openShowDocumentWithLines(textEditor: vscode.TextEditor, filteredLines:
 }
 
 export function liveTransform(textEditor: vscode.TextEditor, selection:vscode.Selection) {
-    return LiveTransformation.liveTransform(textEditor, selection)
+    return LiveTransformation.liveDocumentView();
 }
 
 export function alignToCursor(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {

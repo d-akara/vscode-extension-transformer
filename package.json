@@ -46,6 +46,11 @@
                 "category": "Transform"
             },
             {
+                "command": "dakara-transformer.liveTransform",
+                "title": "Open Live Transform Document View",
+                "category": "Transform"
+            },
+            {
                 "command": "dakara-transformer.filter",
                 "title": "Filter Lines...",
                 "category": "Transform"
