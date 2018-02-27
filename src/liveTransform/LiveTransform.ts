@@ -4,23 +4,10 @@ import * as vscode from 'vscode';
 import * as edit from 'vscode-extension-common'
 import { expandRangeFullLineWidth } from 'vscode-extension-common';
 
-const DEFAULT_SCRIPT = "// lines, selections, document\n" +
-                       "FILTER:\n" +
-                       "MAP:\n"
+const DEFAULT_SCRIPT = "// write macro\n" +
+                       "\n" +
+                       "\n"
 
-const CONTEXT_SEPARATOR = '------------------------------------------------------------------------'
-
-function makeScriptRange(document:vscode.TextDocument) {
-    const lines = edit.linesFromRange(document, edit.makeRangeDocument(document))
-    const separatorLine = lines.find(line=>line.text===CONTEXT_SEPARATOR).lineNumber
-    return new vscode.Range(new vscode.Position(0,0), new vscode.Position(separatorLine, 0))
-}
-
-function makeOutputRange(document:vscode.TextDocument) {
-    const lines = edit.linesFromRange(document, edit.makeRangeDocument(document))
-    const separatorLine = lines.find(line=>line.text===CONTEXT_SEPARATOR).lineNumber
-    return edit.makeRangeFromLineToEnd(document, separatorLine + 1)
-}
 
 function extractTextBetweenDelimeters(text:string, begin:string, end:string) {
     const beginIndex = text.search(begin) + begin.length;
@@ -51,17 +38,12 @@ function selectionsFromDocument(document:vscode.TextDocument) {
 
 
 export function documentToDocumentTransform(update:edit.LiveViewUpdater, event:edit.LiveDocumentViewEvent) {
-    //console.log(event.eventType, event.sourceDocument.fileName, event.sourceOfEventIsView)
+    console.log(event.eventType, event.eventOrigin)
     const targetDocument = event.viewEditor.document;
-    const scriptRange = makeScriptRange(targetDocument)
-    const outputRange = makeOutputRange(targetDocument)
-    //if (event.eventType === 'edit')
-        update(event.viewEditor, outputRange, event.sourceDocument.getText(edit.makeRangeDocument(event.sourceDocument)))
+    update(event.viewEditor, edit.makeRangeDocument(targetDocument), event.sourceEditor.document.getText(edit.makeRangeDocument(event.sourceEditor.document)))
+        .then(()=>event.viewEditor.selection = event.sourceEditor.selection)
 }
 
-
 export function liveDocumentView() {
-    let lastActiveSourceDocument = vscode.window.activeTextEditor.document
-    return edit.liveDocumentView('Live-Transform.txt', DEFAULT_SCRIPT + CONTEXT_SEPARATOR + '\n', documentToDocumentTransform)
-   
+    return edit.liveDocumentView('Live-Transform.txt', DEFAULT_SCRIPT, documentToDocumentTransform)
 }
