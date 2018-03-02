@@ -15,10 +15,13 @@ function extractTextBetweenDelimeters(text:string, begin:string, end:string) {
     return text.substring(beginIndex, endIndex)
 }
 
-function evalFunctionExpression(expression:string):Function {
-    const expressionFn = '(line, regex)=>`' + expression + '`'
-    return eval(expressionFn)
+async function moveLineDown() {
+    await vscode.commands.executeCommand('workbench.action.focusThirdEditorGroup')
+    await vscode.commands.executeCommand('editor.action.moveLinesDownAction');
+}
 
+function evalFunctionExpression(expression:string) {
+    return eval(expression)
 }
 
 function linesFromSourceDocument(document:vscode.TextDocument) {
@@ -40,8 +43,12 @@ function selectionsFromDocument(document:vscode.TextDocument) {
 export function documentToDocumentTransform(update:edit.LiveViewUpdater, event:edit.LiveDocumentViewEvent) {
     console.log(event.eventType, event.eventOrigin)
     const targetDocument = event.viewEditor.document;
-    update(event.viewEditor, edit.makeRangeDocument(targetDocument), event.sourceEditor.document.getText(edit.makeRangeDocument(event.sourceEditor.document)))
-        .then(()=>event.viewEditor.selection = event.sourceEditor.selection)
+    //const transformed = evalFunctionExpression(event.scriptEditor.document.getText(), edit.linesFromRange(event.sourceEditor.document, edit.makeRangeDocument(event.sourceEditor.document)))
+    update(event.viewEditor, edit.makeRangeDocument(targetDocument), event.sourceEditor.document.getText())
+        .then(()=> {
+            event.viewEditor.selection = event.sourceEditor.selection
+            evalFunctionExpression(event.scriptEditor.document.getText())
+        });
 }
 
 export function liveDocumentView() {
