@@ -16,12 +16,32 @@ function extractTextBetweenDelimeters(text:string, begin:string, end:string) {
 }
 
 async function moveLineDown() {
-    await vscode.commands.executeCommand('workbench.action.focusThirdEditorGroup')
     await vscode.commands.executeCommand('editor.action.moveLinesDownAction');
 }
 
-function evalFunctionExpression(expression:string) {
-    return eval(expression)
+async function command(id:string, ...parameters:any[]) {
+    parameters.splice(0,0,id);  // insert id at start of array
+    await vscode.commands.executeCommand.apply(this, parameters)
+}
+
+let queue = []
+
+async function evalFunctionExpression(expression:string) {
+    const preExpression = `async function run() {
+    await vscode.commands.executeCommand('workbench.action.focusThirdEditorGroup');
+    `
+    const postExpression = `
+    }
+    run();
+    `
+    expression = preExpression + expression + postExpression
+    try {
+         await eval(expression)
+    } catch {
+        console.log('unable to evaluate', expression)
+    }
+
+    await vscode.commands.executeCommand('workbench.action.focusSecondEditorGroup');
 }
 
 function linesFromSourceDocument(document:vscode.TextDocument) {
@@ -39,15 +59,22 @@ function selectionsFromDocument(document:vscode.TextDocument) {
     return editor.selections.map(selection=>document.getText(selection))
 }
 
+// TODO - add to promise queue to process.  later debounce
+export async function documentToDocumentTransform(update:edit.LiveViewUpdater, event:edit.LiveDocumentViewEvent) {
+    if (event.eventOrigin === 'script' && event.scriptCursorMoved === 'horizontal') return 
+    if (event.eventOrigin === 'script' && event.eventType === 'edit') return
 
-export function documentToDocumentTransform(update:edit.LiveViewUpdater, event:edit.LiveDocumentViewEvent) {
-    console.log(event.eventType, event.eventOrigin)
     const targetDocument = event.viewEditor.document;
-    //const transformed = evalFunctionExpression(event.scriptEditor.document.getText(), edit.linesFromRange(event.sourceEditor.document, edit.makeRangeDocument(event.sourceEditor.document)))
-    update(event.viewEditor, edit.makeRangeDocument(targetDocument), event.sourceEditor.document.getText())
-        .then(()=> {
+    await Promise.all(queue)
+    return update(event.viewEditor, edit.makeRangeDocument(targetDocument), event.sourceEditor.document.getText())
+    .then(async ()=> {
+            await Promise.all(queue)
+            // todo need to wait for queue before selection change
             event.viewEditor.selection = event.sourceEditor.selection
-            evalFunctionExpression(event.scriptEditor.document.getText())
+            const scriptDocument = event.scriptEditor.document
+            const scriptContent = edit.makeRangeFromStartToLine(scriptDocument, event.scriptEditor.selection.end.line)
+            queue = []
+            queue.push(evalFunctionExpression(event.scriptEditor.document.getText(scriptContent)))
         });
 }
 
