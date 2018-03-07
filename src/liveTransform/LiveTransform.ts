@@ -40,7 +40,6 @@ async function evalFunctionExpression(expression:string) {
     } catch {
         console.log('unable to evaluate', expression)
     }
-
     await vscode.commands.executeCommand('workbench.action.focusSecondEditorGroup');
 }
 
@@ -79,5 +78,5 @@ export async function documentToDocumentTransform(update:edit.LiveViewUpdater, e
 }
 
 export function liveDocumentView() {
-    return edit.liveDocumentView('Live-Transform.txt', DEFAULT_SCRIPT, documentToDocumentTransform)
+    return edit.liveDocumentView('Live-Transform.txt', DEFAULT_SCRIPT, edit.debounce(documentToDocumentTransform, 300))
 }
