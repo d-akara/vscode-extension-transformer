@@ -8,12 +8,7 @@ const DEFAULT_SCRIPT = "// write macro\n" +
                        "\n" +
                        "\n"
 
-
-function extractTextBetweenDelimeters(text:string, begin:string, end:string) {
-    const beginIndex = text.search(begin) + begin.length;
-    const endIndex = text.indexOf(end, beginIndex)
-    return text.substring(beginIndex, endIndex)
-}
+const cursorDecorationType = edit.createCursorDecoratorType()
 
 async function moveLineDown() {
     await vscode.commands.executeCommand('editor.action.moveLinesDownAction');
@@ -24,23 +19,20 @@ async function command(id:string, ...parameters:any[]) {
     await vscode.commands.executeCommand.apply(this, parameters)
 }
 
-let queue = []
-
 async function evalFunctionExpression(expression:string) {
     const preExpression = `async function run() {
-    await vscode.commands.executeCommand('workbench.action.focusThirdEditorGroup');
-    `
+        await vscode.commands.executeCommand('workbench.action.focusThirdEditorGroup')`
     const postExpression = `
     }
     run();
     `
+    expression = expression.replace('command(', 'await command(')
     expression = preExpression + expression + postExpression
     try {
          await eval(expression)
     } catch {
         console.log('unable to evaluate', expression)
     }
-    await vscode.commands.executeCommand('workbench.action.focusSecondEditorGroup');
 }
 
 function linesFromSourceDocument(document:vscode.TextDocument) {
@@ -58,22 +50,37 @@ function selectionsFromDocument(document:vscode.TextDocument) {
     return editor.selections.map(selection=>document.getText(selection))
 }
 
-// TODO - add to promise queue to process.  later debounce
+function commandIdForColumnFocus(column:number) {
+    switch (column) {
+        case 1: return 'workbench.action.focusFirstEditorGroup'
+        case 2: return 'workbench.action.focusSecondEditorGroup'
+        case 3: return 'workbench.action.focusThirdEditorGroup'
+    }
+}
+
+let queue = []
+
 export async function documentToDocumentTransform(update:edit.LiveViewUpdater, event:edit.LiveDocumentViewEvent) {
     if (event.eventOrigin === 'script' && event.scriptCursorMoved === 'horizontal') return 
     if (event.eventOrigin === 'script' && event.eventType === 'edit') return
+
+    const previousFocusColumnNumber = vscode.window.activeTextEditor.viewColumn
 
     const targetDocument = event.viewEditor.document;
     await Promise.all(queue)
     return update(event.viewEditor, edit.makeRangeDocument(targetDocument), event.sourceEditor.document.getText())
     .then(async ()=> {
             await Promise.all(queue)
-            // todo need to wait for queue before selection change
             event.viewEditor.selection = event.sourceEditor.selection
             const scriptDocument = event.scriptEditor.document
             const scriptContent = edit.makeRangeFromStartToLine(scriptDocument, event.scriptEditor.selection.end.line)
             queue = []
-            queue.push(evalFunctionExpression(event.scriptEditor.document.getText(scriptContent)))
+            queue.push(evalFunctionExpression(event.scriptEditor.document.getText(scriptContent))
+                .then(()=>{
+                    event.viewEditor.setDecorations(cursorDecorationType, [edit.createCursorDecorator(event.viewEditor.selection.anchor.line, event.viewEditor.selection.anchor.character)])
+                    return vscode.commands.executeCommand(commandIdForColumnFocus(previousFocusColumnNumber))
+                    //vscode.window.activeTextEditor = previousActiveEditor
+                }))
         });
 }
 
