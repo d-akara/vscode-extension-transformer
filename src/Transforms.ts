@@ -1,9 +1,8 @@
 'use strict';
 import * as path from 'path'
 import * as vscode from 'vscode';
-import * as edit from 'vscode-extension-common'
+import {Lines,Modify,Region,View} from 'vscode-extension-common'
 import * as LiveTransformation from './liveTransform/LiveTransform'
-import { start } from 'repl';
 
 const gutterDecorationType = vscode.window.createTextEditorDecorationType({
     rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed
@@ -16,28 +15,28 @@ function originName(textEditor: vscode.TextEditor) {
 
 function linesFromRangesExpandBlockIfEmpty(textEditor: vscode.TextEditor,ranges: Array<vscode.Range>) {
     if(ranges.length === 1) {
-        ranges[0] = edit.expandRangeToBlockIfEmpty(textEditor, ranges[0]);
+        ranges[0] = Region.expandRangeToBlockIfEmpty(textEditor, ranges[0]);
     }
-    return edit.linesFromRanges(textEditor.document, ranges);
+    return Lines.linesFromRanges(textEditor.document, ranges);
 }
 
 export function sortLines(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
-    if (ranges.length === 1 && !ranges[0].isSingleLine) edit.sortLinesWithinRange(textEditor,  ranges[0]);
+    if (ranges.length === 1 && !ranges[0].isSingleLine) Modify.sortLinesWithinRange(textEditor,  ranges[0]);
     else {
-        ranges = edit.makeVerticalRangesWithinBlock(textEditor, ranges);
-        textEditor.selections = edit.makeSelectionsFromRanges(ranges);
-        edit.sortLinesByColumn(textEditor, ranges);
+        ranges = Region.makeVerticalRangesWithinBlock(textEditor, ranges);
+        textEditor.selections = Region.makeSelectionsFromRanges(ranges);
+        Modify.sortLinesByColumn(textEditor, ranges);
     } 
 }
 export function sortLinesByLength(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
     const linesToSort = linesFromRangesExpandBlockIfEmpty(textEditor, ranges);
-    edit.sortLinesByLength(textEditor, linesToSort);
+    Modify.sortLinesByLength(textEditor, linesToSort);
 }
 
 export function uniqueLines(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
     if(ranges.length === 1) {
-        const rangeBlock = edit.expandRangeToBlockIfEmpty(textEditor, ranges[0]);
-        const lines = edit.linesFromRange(textEditor.document, rangeBlock);
+        const rangeBlock = Region.expandRangeToBlockIfEmpty(textEditor, ranges[0]);
+        const lines = Lines.linesFromRange(textEditor.document, rangeBlock);
         const uniqueMep = new Map()
         lines.forEach(line => {
             uniqueMep.set(line.text, line);
@@ -45,7 +44,7 @@ export function uniqueLines(textEditor: vscode.TextEditor, ranges: Array<vscode.
 
         const uniqueLines = uniqueMep.values()
         const linesArray = Array.from(uniqueLines);
-        edit.replace(textEditor, rangeBlock, edit.textFromLines(textEditor.document, linesArray));
+        Modify.replace(textEditor, rangeBlock, Lines.textFromLines(textEditor.document, linesArray));
     }
 }
 
@@ -58,31 +57,31 @@ export function uniqueLinesToNewDocument(textEditor: vscode.TextEditor, ranges: 
 
     const uniqueLines = uniqueMap.values()
     const linesArray = Array.from(uniqueLines);
-    edit.openShowDocument(originName(textEditor), edit.textFromLines(textEditor.document, linesArray));
+    View.openShowDocument(originName(textEditor), Lines.textFromLines(textEditor.document, linesArray));
 }
 
 export function filterLines(textEditor: vscode.TextEditor, selection:vscode.Selection) {
-    const selectedText = edit.textOfLineSelectionOrWordAtCursor(textEditor.document, selection);
+    const selectedText = Lines.textOfLineSelectionOrWordAtCursor(textEditor.document, selection);
     // If we have multiple lines selected, use that as source to filter, else the entire document
-    const range = selection.isSingleLine ? edit.makeRangeDocument(textEditor.document) : selection;
+    const range = selection.isSingleLine ? Region.makeRangeDocument(textEditor.document) : selection;
 
     let filteredLines = [];
-    return edit.promptForFilterExpression(selectedText)
+    return View.promptForFilterExpression(selectedText)
         .then(fnFilter => {
-            filteredLines = edit.filterLines(textEditor.document, range, fnFilter);
+            filteredLines = Lines.filterLines(textEditor.document, range, fnFilter);
             const content = filteredLines.map(line => line.text).reduce((prev, curr) => prev + "\n" + curr);
-            edit.replace(textEditor, range, content);
+            Modify.replace(textEditor, range, content);
         })
 }
 
 export function filterLinesToNewDocument(textEditor: vscode.TextEditor, selection:vscode.Selection) {
-    const selectedText = edit.textOfLineSelectionOrWordAtCursor(textEditor.document, selection);
+    const selectedText = Lines.textOfLineSelectionOrWordAtCursor(textEditor.document, selection);
     // If we have multiple lines selected, use that as source to filter, else the entire document
-    const range = selection.isSingleLine ? edit.makeRangeDocument(textEditor.document) : selection;
+    const range = selection.isSingleLine ? Region.makeRangeDocument(textEditor.document) : selection;
 
-    return edit.promptForFilterExpression(selectedText)
+    return View.promptForFilterExpression(selectedText)
         .then(fnFilter => {
-            const filteredLines = edit.filterLines(textEditor.document, range, fnFilter);
+            const filteredLines = Lines.filterLines(textEditor.document, range, fnFilter);
             return openShowDocumentWithLines(textEditor, filteredLines)
         })
 }
@@ -114,22 +113,22 @@ function isFilterContextOptionSet(options:FilterContextOptions) {
  * @param selection 
  */
 export function filterLinesWithContextToNewDocument(textEditor: vscode.TextEditor, selection:vscode.Selection) {
-    const selectedText = edit.textOfLineSelectionOrWordAtCursor(textEditor.document, selection);
+    const selectedText = Lines.textOfLineSelectionOrWordAtCursor(textEditor.document, selection);
     // If we have multiple lines selected, use that as source to filter, else the entire document
-    const range = selection.isSingleLine ? edit.makeRangeDocument(textEditor.document) : selection;
+    const range = selection.isSingleLine ? Region.makeRangeDocument(textEditor.document) : selection;
 
-    const regexOption        = edit.makeOption({label: 'Filter', description: 'specify filter to select lines', value: selectedText, input: {prompt: 'Enter regex or [space] + literal', placeHolder:'abc.*'}})
-    const surroundOption     = edit.makeOption({label: 'Surrounding Lines', description: 'add nearby lines', input:{prompt:'[# lines] [optional regex]', placeHolder:'2 abc.*'}})
-    const levelsOption       = edit.makeOption({label: 'Parent Levels', description: 'add lines by relative section level', input:{prompt:'[# parent levels] [optional regex]', placeHolder:'2 abc.*'}})
+    const regexOption        = View.makeOption({label: 'Filter', description: 'specify filter to select lines', value: selectedText, input: {prompt: 'Enter regex or [space] + literal', placeHolder:'abc.*'}})
+    const surroundOption     = View.makeOption({label: 'Surrounding Lines', description: 'add nearby lines', input:{prompt:'[# lines] [optional regex]', placeHolder:'2 abc.*'}})
+    const levelsOption       = View.makeOption({label: 'Parent Levels', description: 'add lines by relative section level', input:{prompt:'[# parent levels] [optional regex]', placeHolder:'2 abc.*'}})
     // TODO
     //const lineNumbersOption  = edit.makeOption({label: 'Line Numbers', description: 'include line numbers in output', value: false})
-    edit.promptOptions([
+    View.promptOptions([
         regexOption,
         surroundOption,
         levelsOption,
         //lineNumbersOption
     ], (item, action)=>{
-        if (edit.QuickPickActionType.INPUT == action) {
+        if (View.QuickPickActionType.INPUT == action) {
             // don't process realtime input changes on large documents
             if (range.end.line - range.start.line > 10000) return
         }
@@ -141,8 +140,8 @@ export function filterLinesWithContextToNewDocument(textEditor: vscode.TextEdito
         }
         
         const startTime = new Date().getMilliseconds()
-        const fnFilter = edit.makeFilterFunction(regexOption.value)
-        let filteredLines = edit.filterLines(textEditor.document, range, fnFilter)
+        const fnFilter = View.makeFilterFunction(regexOption.value)
+        let filteredLines = Lines.filterLines(textEditor.document, range, fnFilter)
         // TODO need to optimize the following for large documents
         if (isFilterContextOptionSet(contextOptions)) {
             filteredLines = filteredLines.map(line=>addContextLines(textEditor, line, contextOptions))
@@ -164,15 +163,15 @@ function addContextLines(textEditor: vscode.TextEditor, line:vscode.TextLine, op
     let addedContextLines:vscode.TextLine[] = []
 
     if (!isNaN(options.sectionByLevel)) {
-        const range = edit.makeRangeFromFoldingRegionRelativeLevel(textEditor.document,line.lineNumber,options.sectionByLevel, tabSize)
-        let lines = edit.linesFromRange(textEditor.document, range)
+        const range = Region.makeRangeFromFoldingRegionRelativeLevel(textEditor.document,line.lineNumber,options.sectionByLevel, tabSize)
+        let lines = Lines.linesFromRange(textEditor.document, range)
         if (options.sectionByLevelRegex)
             lines = lines.filter(line=>options.sectionByLevelRegex.test(line.text))
         addedContextLines = addedContextLines.concat(lines)
     }
 
     if (options.surroundingLines) {
-        let lines = edit.collectLines(textEditor.document, Math.max(0, line.lineNumber - options.surroundingLines), Math.min(textEditor.document.lineCount, line.lineNumber + options.surroundingLines))
+        let lines = Lines.collectLines(textEditor.document, Math.max(0, line.lineNumber - options.surroundingLines), Math.min(textEditor.document.lineCount, line.lineNumber + options.surroundingLines))
         if (options.surroundingRegex)
             lines = lines.filter(line=>options.surroundingRegex.test(line.text))
         addedContextLines = addedContextLines.concat(lines)
@@ -187,10 +186,10 @@ function openShowDocumentWithLines(textEditor: vscode.TextEditor, filteredLines:
     let content = ''
     if (filteredLines.length)
         content = filteredLines.map(line => line.text).reduce((prev, curr) => prev + "\n" + curr);
-    return edit.openShowDocument(originName(textEditor), content)
+    return View.openShowDocument(originName(textEditor), content)
         .then(editor => {
             if (filteredLines.length < 1000) {
-                const decorations = filteredLines.map((line, index) => edit.createGutterDecorator(index, ': ' + (line.lineNumber + 1), '50px'));
+                const decorations = filteredLines.map((line, index) => View.createGutterDecorator(index, ': ' + (line.lineNumber + 1), '50px'));
                 editor.setDecorations(gutterDecorationType, decorations);
             } else {
                 editor.setDecorations(gutterDecorationType, [])
@@ -204,15 +203,15 @@ export function liveTransform(textEditor: vscode.TextEditor, selection:vscode.Se
 }
 
 export function alignToCursor(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
-    ranges = edit.makeVerticalRangesWithinBlock(textEditor, ranges);
-    textEditor.selections = edit.makeSelectionsFromRanges(ranges);
-    const lineInfos = edit.makeLineInfos(textEditor, ranges);
+    ranges = Region.makeVerticalRangesWithinBlock(textEditor, ranges);
+    textEditor.selections = Region.makeSelectionsFromRanges(ranges);
+    const lineInfos = Lines.makeLineInfos(textEditor, ranges);
     textEditor.edit(function (editBuilder) {
         lineInfos.forEach(line => {
             const lineLeftOfCursor = line.line.text.substring(0, line.range.start.character);
             const trimmedRight = line.line.text.substring(line.range.start.character).trim();
 
-            editBuilder.replace(edit.expandRangeFullLineWidth(textEditor.document, line.range), lineLeftOfCursor + trimmedRight );
+            editBuilder.replace(Region.expandRangeFullLineWidth(textEditor.document, line.range), lineLeftOfCursor + trimmedRight );
         });
     })
 }
@@ -229,7 +228,7 @@ export function alignCSV(textEditor: vscode.TextEditor, ranges: Array<vscode.Ran
             appendDelimeter(newLineTexts, ',');
     }
 
-    edit.replaceLinesWithText(textEditor, lines, newLineTexts);
+    Modify.replaceLinesWithText(textEditor, lines, newLineTexts);
 }
 
 function appendColumn(lines:string[], linesParts:string[][], max:number) {
@@ -272,7 +271,7 @@ export function compactCSV(textEditor: vscode.TextEditor, ranges: Array<vscode.R
             appendDelimeter(newLineTexts, ',');
     }
 
-    edit.replaceLinesWithText(textEditor, lines, newLineTexts);
+    Modify.replaceLinesWithText(textEditor, lines, newLineTexts);
 }
 
 function compactColumn(lines:string[], linesParts:string[][], max:number) {
@@ -285,25 +284,25 @@ function compactColumn(lines:string[], linesParts:string[][], max:number) {
 }
 
 export function copyToNewDocument(textEditor: vscode.TextEditor) {
-    edit.selectionsOrMatchesAsSelectionsOrDocument(textEditor)
+    Region.selectionsOrMatchesAsSelectionsOrDocument(textEditor)
         .then(selections=> {
-            const textFromSelections = edit.textsFromRanges(textEditor.document, selections);
-            edit.openShowDocument(originName(textEditor), textFromSelections.join('\n'));
+            const textFromSelections = Region.textsFromRanges(textEditor.document, selections);
+            View.openShowDocument(originName(textEditor), textFromSelections.join('\n'));
         });
 }
 
 export function selectLines(textEditor: vscode.TextEditor) {
-    edit.selectionsOrMatchesAsSelectionsOrDocument(textEditor)
+    Region.selectionsOrMatchesAsSelectionsOrDocument(textEditor)
         .then(selections=> {
             textEditor.selections = selections.map(selection=> {
-                const range = edit.expandRangeFullLineWidth(textEditor.document, selection)
+                const range = Region.expandRangeFullLineWidth(textEditor.document, selection)
                 return new vscode.Selection(range.start, range.end);
             })
         });
 }
 
 export function linesAsJSON(textEditor: vscode.TextEditor) {
-    const lines = edit.linesFromRange(textEditor.document, textEditor.selection)
+    const lines = Lines.linesFromRange(textEditor.document, textEditor.selection)
     const jsonLines = lines.map(line=>JSON.stringify(line.text) + ",")
-    edit.replaceLinesWithText(textEditor, lines, jsonLines);
+    Modify.replaceLinesWithText(textEditor, lines, jsonLines);
 }
