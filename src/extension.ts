@@ -1,7 +1,7 @@
 'use strict';
 import * as vscode from 'vscode';
 import * as transforms from './Transforms';
-import * as edit from 'vscode-extension-common'
+import {Modify, View} from 'vscode-extension-common'
 /**
  * TODO - planned features:
  * - unique selections as new document
@@ -44,7 +44,7 @@ export function activate(context: vscode.ExtensionContext) {
     disposable = vscode.commands.registerCommand('dakara-transformer.reverseLines', () => {
         const textEditor = vscode.window.activeTextEditor;
         const selections = textEditor.selections;
-        edit.reverseLines(textEditor, selections);
+        Modify.reverseLines(textEditor, selections);
     });
     context.subscriptions.push(disposable);
 
@@ -115,7 +115,7 @@ export function activate(context: vscode.ExtensionContext) {
         const textEditor = vscode.window.activeTextEditor;
         const commands = vscode.commands.getCommands().then(commandList => {
             const content = commandList.reduce((prev, curr) => prev + '\n' + curr);
-            return edit.openShowDocument('untitled:commands.txt', content);
+            return View.openShowDocument('untitled:commands.txt', content);
         })
     });
     context.subscriptions.push(disposable);
