@@ -1,7 +1,7 @@
 'use strict';
 import * as vscode from 'vscode';
 import * as transforms from './Transforms';
-import {Modify, View} from 'vscode-extension-common'
+import {Modify, View, Application} from 'vscode-extension-common'
 /**
  * TODO - planned features:
  * - unique selections as new document
@@ -83,10 +83,18 @@ export function activate(context: vscode.ExtensionContext) {
     });
     context.subscriptions.push(disposable);
 
-    disposable = vscode.commands.registerCommand('dakara-transformer.liveTransform', () => {
+    disposable = vscode.commands.registerCommand('dakara-transformer.macroBuilder', () => {
+        // TODO select existing macro script, or type name for new
+        // option in list to delete a macro
         const textEditor = vscode.window.activeTextEditor;
         const selection = textEditor.selection;
-        transforms.liveTransform(textEditor, selection)
+        transforms.macroBuilder(textEditor, selection)
+    });
+    context.subscriptions.push(disposable);
+
+    disposable = vscode.commands.registerCommand('dakara-transformer.macroRepeat', () => {
+        const textEditor = vscode.window.activeTextEditor;
+        transforms.macroRepeatLast(textEditor)
     });
     context.subscriptions.push(disposable);
 

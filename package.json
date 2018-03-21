@@ -23,7 +23,9 @@
         "onCommand:dakara-transformer.copyToNewDocument",
         "onCommand:dakara-transformer.filter",
         "onCommand:dakara-transformer.filterAsNewDocument",
-        "onCommand:dakara-transformer.liveTransform",
+        "onCommand:dakara-transformer.macroBuilder",
+        "onCommand:dakara-transformer.macroRepeat",
+        "onCommand:dakara-transformer.macroRun",
         "onCommand:dakara-transformer.linesAsJSON",
         "onCommand:dakara-transformer.reverseLines",
         "onCommand:dakara-transformer.selectLines",
@@ -46,8 +48,18 @@
                 "category": "Transform"
             },
             {
-                "command": "dakara-transformer.liveTransform",
-                "title": "Open Live Transform Document View",
+                "command": "dakara-transformer.macroBuilder",
+                "title": "Macro Script Builder...",
+                "category": "Transform"
+            },
+            {
+                "command": "dakara-transformer.macroRun",
+                "title": "Macro Script Run...",
+                "category": "Transform"
+            },
+            {
+                "command": "dakara-transformer.macroRepeat",
+                "title": "Macro Script Repeat Last",
                 "category": "Transform"
             },
             {
