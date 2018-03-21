@@ -3,6 +3,7 @@ import * as path from 'path'
 import * as vscode from 'vscode';
 import * as edit from 'vscode-extension-common'
 import { Region,Lines,Modify,View } from 'vscode-extension-common';
+import * as MacroRepository from './MacroRepository'
 
 const DEFAULT_SCRIPT = "// write macro\n" +
                        "\n" +
@@ -87,5 +88,6 @@ export async function documentToDocumentTransform(update:View.LiveViewUpdater, e
 }
 
 export function liveDocumentView() {
+    console.log(MacroRepository.resolveMacroFileLocation())
     return View.liveDocumentView('Live-Transform.txt', DEFAULT_SCRIPT, edit.debounce(documentToDocumentTransform, 300))
 }

@@ -2,7 +2,8 @@
 import * as path from 'path'
 import * as vscode from 'vscode';
 import {Lines,Modify,Region,View} from 'vscode-extension-common'
-import * as LiveTransformation from './liveTransform/LiveTransform'
+import * as MacroBuilder from './macros/MacroBuilder'
+import * as MacroRepository from './macros/MacroRepository'
 
 const gutterDecorationType = vscode.window.createTextEditorDecorationType({
     rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed
@@ -198,8 +199,12 @@ function openShowDocumentWithLines(textEditor: vscode.TextEditor, filteredLines:
         });
 }
 
-export function liveTransform(textEditor: vscode.TextEditor, selection:vscode.Selection) {
-    return LiveTransformation.liveDocumentView();
+export function macroBuilder(textEditor: vscode.TextEditor, selection:vscode.Selection) {
+    return MacroBuilder.liveDocumentView();
+}
+
+export function macroRepeatLast(textEditor: vscode.TextEditor) {
+    console.log(MacroRepository.resolveMacroFileLocation())
 }
 
 export function alignToCursor(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
