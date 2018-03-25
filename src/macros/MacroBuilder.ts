@@ -14,15 +14,6 @@ const cursorDecorationType = View.createCursorDecoratorType()
 let currentMacroScript = ''
 let scriptEditor:vscode.TextEditor
 
-async function moveLineDown() {
-    await vscode.commands.executeCommand('editor.action.moveLinesDownAction');
-}
-
-async function command(id:string, ...parameters:any[]) {
-    parameters.splice(0,0,id);  // insert id at start of array
-    await vscode.commands.executeCommand.apply(this, parameters)
-}
-
 async function evalFunctionExpression(expression:string) {
     const macroExpression = MacroExpression.parseScript(expression)
     for (const command of macroExpression.commands) {
@@ -38,21 +29,6 @@ async function evalFunctionExpressionAsPreview(expression:string, previewEditor:
     await vscode.commands.executeCommand(commandIdForColumnFocus(previousColumnActive))
 }
 
-function linesFromSourceDocument(document:vscode.TextDocument) {
-    const editor = View.visibleTextEditorFromDocument(document)
-    return Lines.linesFromRanges(document, editor.selections);
-}
-
-function linesFromDocument(document:vscode.TextDocument) {
-    const editor = View.visibleTextEditorFromDocument(document)
-    return Lines.linesFromRange(document, Region.makeRangeDocument(document)).map(line=>line.text)
-}
-
-function selectionsFromDocument(document:vscode.TextDocument) {
-    const editor = View.visibleTextEditorFromDocument(document)
-    return editor.selections.map(selection=>document.getText(selection))
-}
-
 function commandIdForColumnFocus(column:number) {
     switch (column) {
         case 1: return 'workbench.action.focusFirstEditorGroup'
@@ -66,8 +42,39 @@ export function runCurrentMacro() {
     evalFunctionExpression(currentMacroScript)
 }
 
-export async function previewCurrentMacro() {
-    scriptEditor = await View.openShowDocument('Macro Script.txt', DEFAULT_SCRIPT, false)
+
+export async function runMacro() {
+    const existingMacros = await MacroRepository.getMacroNames()
+    const options:View.QuickPickActionable[] = existingMacros.map(macroName => {
+        return View.makeOption({label:macroName, final:true, description:'run macro'})
+    })
+    options.unshift({label:'Create Macro...', description:'start editing a new macro', final: true, value:'create'})
+    const selectedItem = await View.promptOptions(options)
+    if (!selectedItem) return 
+
+    if (selectedItem.value === 'create') {
+        openMacroEditor()
+    } else {
+        currentMacroScript = (await MacroRepository.fetchMacro(selectedItem.label)).content
+        runCurrentMacro()
+    }
+    
+}
+
+export async function editMacro() {
+    const existingMacros = await MacroRepository.getMacroNames()
+    const options:View.QuickPickActionable[] = existingMacros.map(macroName => {
+        return View.makeOption({label:macroName, final:true, description:'edit macro'})
+    })
+    const selectedItem = await View.promptOptions(options)
+    if (!selectedItem) return 
+
+    currentMacroScript = (await MacroRepository.fetchMacro(selectedItem.label)).content
+    openMacroEditor(currentMacroScript)
+}
+
+export async function openMacroEditor(defaultScript = DEFAULT_SCRIPT) {
+    scriptEditor = await View.openShowDocument('New Macro Script.txt', defaultScript, false)
     const previousFocusColumnNumber = vscode.window.activeTextEditor.viewColumn
     const sourceEditor              = View.visibleTextEditorByColumn(1)
     const sourceText                = sourceEditor.document.getText()
@@ -92,8 +99,15 @@ export async function previewCurrentMacro() {
     })
 }
 
-export async function openScript() {
-    scriptEditor = await View.openShowDocument('Macro Script.txt', DEFAULT_SCRIPT, false)
+export async function saveScript() {
+    const existingMacros = await MacroRepository.getMacroNames()
+    const options:View.QuickPickActionable[] = existingMacros.map(macroName => {
+        return View.makeOption({label:macroName, final:true, description:'macro'})
+    })
+    options.unshift({label:'create new...', description:'save new macro', final: true, input: {prompt:'enter name of new macro'}})
+    View.promptOptions(options, (item, action) => {
+        if (View.QuickPickActionType.ENTER === action) {
+            MacroRepository.saveMacro(item.value || item.label, currentMacroScript)
+        }
+    })
 }
-
-

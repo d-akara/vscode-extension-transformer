@@ -39,12 +39,14 @@ function saveMacros(macros:MacroStorage):Promise<Error> {
     })
 }
 
-export function getMacroNames() {
-    return loadMacros()
+export async function getMacroNames() {
+    const macros = await loadMacros()
+    return macros.macros.map(macro => macro.name)
 }
 
-export function fetchMacro(name:string) {
-
+export async function fetchMacro(name:string) {
+    const macros = await loadMacros()
+    return macros.macros.find(macro => macro.name === name)
 }
 
 export function saveMacro(macroName:string, content:string) {
