@@ -18,8 +18,8 @@ export function parseScript(script:string) {
 
     const allLines = script.split(/\r?\n/);
     allLines.forEach(line => {
-        const [commandType, commandName] = line.split(':')
-        if (commandType === 'vsc')
+        const [commandType, commandName] = line.split('.')
+        if (commandType === 'v')
             expression.commands.push({type: CommandType.VSCODE_COMMAND, command: commandName})
     })
 

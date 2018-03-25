@@ -23,10 +23,10 @@
         "onCommand:dakara-transformer.copyToNewDocument",
         "onCommand:dakara-transformer.filter",
         "onCommand:dakara-transformer.filterAsNewDocument",
-        "onCommand:dakara-transformer.macroBuilder",
-        "onCommand:dakara-transformer.macroPreview",
+        "onCommand:dakara-transformer.macroEdit",
         "onCommand:dakara-transformer.macroRepeat",
         "onCommand:dakara-transformer.macroRun",
+        "onCommand:dakara-transformer.macroSave",
         "onCommand:dakara-transformer.linesAsJSON",
         "onCommand:dakara-transformer.reverseLines",
         "onCommand:dakara-transformer.selectLines",
@@ -49,23 +49,23 @@
                 "category": "Transform"
             },
             {
-                "command": "dakara-transformer.macroBuilder",
-                "title": "Macro Script Builder...",
+                "command": "dakara-transformer.macroRun",
+                "title": "Macro Script Run/Create...",
                 "category": "Transform"
             },
             {
-                "command": "dakara-transformer.macroRun",
-                "title": "Macro Script Run...",
+                "command": "dakara-transformer.macroEdit",
+                "title": "Macro Script Edit...",
                 "category": "Transform"
             },
             {
                 "command": "dakara-transformer.macroRepeat",
-                "title": "Macro Script Run Current",
+                "title": "Macro Script Repeat Last",
                 "category": "Transform"
             },
             {
-                "command": "dakara-transformer.macroPreview",
-                "title": "Macro Script Preview",
+                "command": "dakara-transformer.macroSave",
+                "title": "Macro Script Save...",
                 "category": "Transform"
             },
             {
