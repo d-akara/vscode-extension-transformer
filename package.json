@@ -24,6 +24,7 @@
         "onCommand:dakara-transformer.filter",
         "onCommand:dakara-transformer.filterAsNewDocument",
         "onCommand:dakara-transformer.macroBuilder",
+        "onCommand:dakara-transformer.macroPreview",
         "onCommand:dakara-transformer.macroRepeat",
         "onCommand:dakara-transformer.macroRun",
         "onCommand:dakara-transformer.linesAsJSON",
@@ -59,7 +60,12 @@
             },
             {
                 "command": "dakara-transformer.macroRepeat",
-                "title": "Macro Script Repeat Last",
+                "title": "Macro Script Run Current",
+                "category": "Transform"
+            },
+            {
+                "command": "dakara-transformer.macroPreview",
+                "title": "Macro Script Preview",
                 "category": "Transform"
             },
             {
@@ -133,10 +139,10 @@
     },
     "devDependencies": {
         "@types/mocha": "^2.2.46",
-        "@types/node": "^6.0.96",
+        "@types/node": "^8.9.5",
         "mocha": "^2.3.3",
         "typescript": "^2.7.2",
-        "vscode": "^1.1.10"
+        "vscode": "^1.1.14"
     },
     "dependencies": {
         "vscode-extension-common": "file:../vscode-extension-common"

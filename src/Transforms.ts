@@ -199,12 +199,16 @@ function openShowDocumentWithLines(textEditor: vscode.TextEditor, filteredLines:
         });
 }
 
-export function macroBuilder(textEditor: vscode.TextEditor, selection:vscode.Selection) {
-    return MacroBuilder.liveDocumentView();
+export function macroBuilder() {
+    return MacroBuilder.openScript();
 }
 
-export function macroRepeatLast(textEditor: vscode.TextEditor) {
-    console.log(MacroRepository.resolveMacroFileLocation())
+export function macroPreview() {
+    return MacroBuilder.previewCurrentMacro();
+}
+
+export function macroRepeatLast() {
+    MacroBuilder.runCurrentMacro()
 }
 
 export function alignToCursor(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {

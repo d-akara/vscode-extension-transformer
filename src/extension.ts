@@ -86,15 +86,17 @@ export function activate(context: vscode.ExtensionContext) {
     disposable = vscode.commands.registerCommand('dakara-transformer.macroBuilder', () => {
         // TODO select existing macro script, or type name for new
         // option in list to delete a macro
-        const textEditor = vscode.window.activeTextEditor;
-        const selection = textEditor.selection;
-        transforms.macroBuilder(textEditor, selection)
+        transforms.macroBuilder()
     });
     context.subscriptions.push(disposable);
 
     disposable = vscode.commands.registerCommand('dakara-transformer.macroRepeat', () => {
-        const textEditor = vscode.window.activeTextEditor;
-        transforms.macroRepeatLast(textEditor)
+        transforms.macroRepeatLast()
+    });
+    context.subscriptions.push(disposable);
+
+    disposable = vscode.commands.registerCommand('dakara-transformer.macroPreview', () => {
+        transforms.macroPreview()
     });
     context.subscriptions.push(disposable);
 

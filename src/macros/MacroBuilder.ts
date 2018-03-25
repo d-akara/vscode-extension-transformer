@@ -2,14 +2,17 @@
 import * as path from 'path'
 import * as vscode from 'vscode';
 import * as edit from 'vscode-extension-common'
-import { Region,Lines,Modify,View } from 'vscode-extension-common';
+import { Region,Lines,Modify,View,Application } from 'vscode-extension-common';
 import * as MacroRepository from './MacroRepository'
+import * as MacroExpression from './MacroExpression'
 
 const DEFAULT_SCRIPT = "// write macro\n" +
                        "\n" +
                        "\n"
 
 const cursorDecorationType = View.createCursorDecoratorType()
+let currentMacroScript = ''
+let scriptEditor:vscode.TextEditor
 
 async function moveLineDown() {
     await vscode.commands.executeCommand('editor.action.moveLinesDownAction');
@@ -21,21 +24,18 @@ async function command(id:string, ...parameters:any[]) {
 }
 
 async function evalFunctionExpression(expression:string) {
-    const preExpression = `async function run() {
-        await vscode.commands.executeCommand('workbench.action.focusThirdEditorGroup')`
-    const postExpression = `
-    }
-    run();
-    `
-    
-    expression = expression.replace(new RegExp('command\\(', 'g'), 'await command(')
-    //expression = expression.replace('command(', 'await command(')
-    expression = preExpression + expression + postExpression
-    try {
-         await eval(expression)
-    } catch {
-        console.log('unable to evaluate', expression)
-    }
+    const macroExpression = MacroExpression.parseScript(expression)
+    for (const command of macroExpression.commands) {
+        await vscode.commands.executeCommand(command.command)
+    }   
+}
+
+async function evalFunctionExpressionAsPreview(expression:string, previewEditor:vscode.TextEditor) {
+    const previousColumnActive = vscode.window.activeTextEditor.viewColumn
+    await vscode.commands.executeCommand('workbench.action.focusThirdEditorGroup')
+    await evalFunctionExpression(expression)
+    previewEditor.setDecorations(cursorDecorationType, [View.createCursorDecorator(previewEditor.selection.anchor.line, previewEditor.selection.anchor.character)])
+    await vscode.commands.executeCommand(commandIdForColumnFocus(previousColumnActive))
 }
 
 function linesFromSourceDocument(document:vscode.TextDocument) {
@@ -61,33 +61,39 @@ function commandIdForColumnFocus(column:number) {
     }
 }
 
-let queue = []
+export function runCurrentMacro() {
+    console.log('running macro')
+    evalFunctionExpression(currentMacroScript)
+}
 
-export async function documentToDocumentTransform(update:View.LiveViewUpdater, event:View.LiveDocumentViewEvent) {
-    if (event.eventOrigin === 'script' && event.scriptCursorMoved === 'horizontal') return 
-    if (event.eventOrigin === 'script' && event.eventType === 'edit') return
-
+export async function previewCurrentMacro() {
+    scriptEditor = await View.openShowDocument('Macro Script.txt', DEFAULT_SCRIPT, false)
     const previousFocusColumnNumber = vscode.window.activeTextEditor.viewColumn
+    const sourceEditor              = View.visibleTextEditorByColumn(1)
+    const sourceText                = sourceEditor.document.getText()
+    const macroScript               = scriptEditor.document.getText()
+    const viewEditor                = await View.openShowDocument('Macro Preview.txt', sourceText, false)
+    
+    viewEditor.selection = sourceEditor.selection
+    viewEditor.setDecorations(cursorDecorationType, [View.createCursorDecorator(viewEditor.selection.anchor.line, viewEditor.selection.anchor.character)])
+    vscode.commands.executeCommand(commandIdForColumnFocus(previousFocusColumnNumber))
 
-    const targetDocument = event.viewEditor.document;
-    await Promise.all(queue)
-    return update(event.viewEditor, Region.makeRangeDocument(targetDocument), event.sourceEditor.document.getText())
-    .then(async ()=> {
-            await Promise.all(queue)
-            event.viewEditor.selection = event.sourceEditor.selection
-            const scriptDocument = event.scriptEditor.document
-            const scriptContent = Region.makeRangeFromStartToLine(scriptDocument, event.scriptEditor.selection.end.line)
-            queue = []
-            queue.push(evalFunctionExpression(event.scriptEditor.document.getText(scriptContent))
-                .then(()=>{
-                    event.viewEditor.setDecorations(cursorDecorationType, [View.createCursorDecorator(event.viewEditor.selection.anchor.line, event.viewEditor.selection.anchor.character)])
-                    return vscode.commands.executeCommand(commandIdForColumnFocus(previousFocusColumnNumber))
-                    //vscode.window.activeTextEditor = previousActiveEditor
-                }))
-        });
+    View.watchDocument(scriptEditor.document, async event => {
+        if (event.eventType === 'selection' && event.cursorMoved === 'vertical') {
+            await viewEditor.edit(function (editBuilder) {
+                editBuilder.replace(Region.makeRangeDocument(viewEditor.document), sourceText);
+            }, {undoStopAfter:false, undoStopBefore:false});
+
+            viewEditor.selection = sourceEditor.selection
+            const scriptContent = Region.makeRangeFromStartToLine(scriptEditor.document, scriptEditor.selection.end.line)
+            currentMacroScript = scriptEditor.document.getText(scriptContent)
+            await evalFunctionExpressionAsPreview(currentMacroScript, viewEditor)
+        }
+    })
 }
 
-export function liveDocumentView() {
-    console.log(MacroRepository.resolveMacroFileLocation())
-    return View.liveDocumentView('Live-Transform.txt', DEFAULT_SCRIPT, edit.debounce(documentToDocumentTransform, 300))
+export async function openScript() {
+    scriptEditor = await View.openShowDocument('Macro Script.txt', DEFAULT_SCRIPT, false)
 }
+
+
