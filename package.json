@@ -37,8 +37,7 @@
     ],
     "main": "./out/extension",
     "contributes": {
-        "commands": [
-            {
+        "commands": [{
                 "command": "dakara-transformer.sortLines",
                 "title": "Sort Lines",
                 "category": "Transform"
@@ -128,7 +127,22 @@
                 "title": "Lines As JSON",
                 "category": "Transform"
             }
-        ]
+        ],
+        "languages": [{
+            "id": "macro",
+            "aliases": [
+                "macro"
+            ],
+            "extensions": [
+                ".macro"
+            ],
+            "configuration": "./language-configuration.json"
+        }],
+        "grammars": [{
+            "language": "macro",
+            "scopeName": "source.macro",
+            "path": "./macro.tmLanguage"
+        }]
     },
     "scripts": {
         "vscode:prepublish": "tsc -p ./",
