@@ -74,7 +74,7 @@ export async function editMacro() {
 }
 
 export async function openMacroEditor(defaultScript = DEFAULT_SCRIPT) {
-    scriptEditor = await View.openShowDocument('New Macro Script.txt', defaultScript, false)
+    scriptEditor = await View.openShowDocument('New Macro Script.macro', defaultScript, false)
     const previousFocusColumnNumber = vscode.window.activeTextEditor.viewColumn
     const sourceEditor              = View.visibleTextEditorByColumn(1)
     const sourceText                = sourceEditor.document.getText()
