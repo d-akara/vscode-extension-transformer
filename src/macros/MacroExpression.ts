@@ -23,8 +23,10 @@ export function parseScript(script:string) {
     const allLines = script.split(/\r?\n/);
     allLines.forEach(line => {
         const [commandType, commandName] = line.split(' ', 2)
-        if (commandType === 'v')
+        if (commandType === 'v' || commandType === 'c' || commandType === 's')
             expression.commands.push({type: CommandType.VSCODE_COMMAND, command: commandName})
+        if (commandType === 't')
+            expression.commands.push({type: CommandType.VSCODE_COMMAND, command: 'type', parameters: [{text: commandName}] })
     })
 
     return expression
@@ -35,7 +37,18 @@ export async function registerCompletionProvider() {
     
     vscode.languages.registerCompletionItemProvider('macro', {
         provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext) {
-            return commands.map(prompt => new vscode.CompletionItem('v ' + prompt, vscode.CompletionItemKind.Variable))
+            if (position.character !== 1) return
+
+            const range = new vscode.Range(new vscode.Position(position.line,0), new vscode.Position(position.line,1))
+            const character = document.getText(range)
+            if (character === 'c')
+                return commands.filter(prompt => /cursor/i.test(prompt))
+                               .map(prompt => new vscode.CompletionItem('c ' + prompt, vscode.CompletionItemKind.Variable))
+            if (character === 's')
+                return commands.filter(prompt => /select/i.test(prompt))
+                               .map(prompt => new vscode.CompletionItem('s ' + prompt, vscode.CompletionItemKind.Variable))
+            if (character === 'v')
+                return commands.map(prompt => new vscode.CompletionItem('v ' + prompt, vscode.CompletionItemKind.Variable))
         }
     });
 }
