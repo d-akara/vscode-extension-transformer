@@ -75,7 +75,7 @@
                     </dict>
                 </dict>
                 <key>match</key>
-                <string>^(v|m)(\s)*(.*$)</string>
+                <string>^(v|m|c|s|t)(\s)*(.*$)</string>
                 <key>name</key>
                 <string>macro.command</string>
             </dict>

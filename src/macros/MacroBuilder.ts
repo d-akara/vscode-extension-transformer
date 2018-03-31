@@ -17,24 +17,19 @@ let scriptEditor:vscode.TextEditor
 async function evalFunctionExpression(expression:string) {
     const macroExpression = MacroExpression.parseScript(expression)
     for (const command of macroExpression.commands) {
-        await vscode.commands.executeCommand(command.command)
+        const parameters = [command.command].concat(command.parameters)
+        await vscode.commands.executeCommand.apply(this, parameters)
     }   
 }
 
 async function evalFunctionExpressionAsPreview(expression:string, previewEditor:vscode.TextEditor) {
     const previousColumnActive = vscode.window.activeTextEditor.viewColumn
-    await vscode.commands.executeCommand('workbench.action.focusThirdEditorGroup')
+    // TODO find editor with preview and the change focus to that group
+
+    await View.setFocusOnEditorColumn(previewEditor.viewColumn)
     await evalFunctionExpression(expression)
     previewEditor.setDecorations(cursorDecorationType, [View.createCursorDecorator(previewEditor.selection.anchor.line, previewEditor.selection.anchor.character)])
-    await vscode.commands.executeCommand(commandIdForColumnFocus(previousColumnActive))
-}
-
-function commandIdForColumnFocus(column:number) {
-    switch (column) {
-        case 1: return 'workbench.action.focusFirstEditorGroup'
-        case 2: return 'workbench.action.focusSecondEditorGroup'
-        case 3: return 'workbench.action.focusThirdEditorGroup'
-    }
+    await View.setFocusOnEditorColumn(previousColumnActive)
 }
 
 export function runCurrentMacro() {
@@ -73,28 +68,34 @@ export async function editMacro() {
     openMacroEditor(currentMacroScript)
 }
 
+let watcher:View.DocumentWatcher
+
 export async function openMacroEditor(defaultScript = DEFAULT_SCRIPT) {
-    scriptEditor = await View.openShowDocument('New Macro Script.macro', defaultScript, false)
+    scriptEditor = await View.openShowDocument('New Macro Script.macro', defaultScript, false, 2)
     const previousFocusColumnNumber = vscode.window.activeTextEditor.viewColumn
     const sourceEditor              = View.visibleTextEditorByColumn(1)
     const sourceText                = sourceEditor.document.getText()
     const macroScript               = scriptEditor.document.getText()
-    const viewEditor                = await View.openShowDocument('Macro Preview.txt', sourceText, false)
+    let   previewEditor             = await View.openShowDocument('Macro Preview.txt', sourceText, false, 3)
+    const previewDocument           = previewEditor.document
     
-    viewEditor.selection = sourceEditor.selection
-    viewEditor.setDecorations(cursorDecorationType, [View.createCursorDecorator(viewEditor.selection.anchor.line, viewEditor.selection.anchor.character)])
-    vscode.commands.executeCommand(commandIdForColumnFocus(previousFocusColumnNumber))
+    previewEditor.selection = sourceEditor.selection
+    previewEditor.setDecorations(cursorDecorationType, [View.createCursorDecorator(previewEditor.selection.anchor.line, previewEditor.selection.anchor.character)])
+    View.setFocusOnEditorColumn(previousFocusColumnNumber)
 
-    View.watchDocument(scriptEditor.document, async event => {
+    if (watcher) watcher.dispose() // disconnect any previous watcher
+    watcher = View.watchDocument(scriptEditor.document, async event => {
+        previewEditor = View.visibleTextEditorFromDocument(previewDocument)
+        if (!previewEditor) return
         if (event.eventType === 'selection' && event.cursorMoved === 'vertical') {
-            await viewEditor.edit(function (editBuilder) {
-                editBuilder.replace(Region.makeRangeDocument(viewEditor.document), sourceText);
+            await previewEditor.edit(function (editBuilder) {
+                editBuilder.replace(Region.makeRangeDocument(previewEditor.document), sourceText);
             }, {undoStopAfter:false, undoStopBefore:false});
 
-            viewEditor.selection = sourceEditor.selection
+            previewEditor.selection = sourceEditor.selection
             const scriptContent = Region.makeRangeFromStartToLine(scriptEditor.document, scriptEditor.selection.end.line)
             currentMacroScript = scriptEditor.document.getText(scriptContent)
-            await evalFunctionExpressionAsPreview(currentMacroScript, viewEditor)
+            await evalFunctionExpressionAsPreview(currentMacroScript, previewEditor)
         }
     })
 }
