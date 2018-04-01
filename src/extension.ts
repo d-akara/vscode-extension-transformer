@@ -88,8 +88,13 @@ export function activate(context: vscode.ExtensionContext) {
     });
     context.subscriptions.push(disposable);
 
-    disposable = vscode.commands.registerCommand('dakara-transformer.macroSave', () => {
-        transforms.macroSave()
+    disposable = vscode.commands.registerCommand('dakara-transformer.macroCreate', () => {
+        transforms.macroCreate()
+    });
+    context.subscriptions.push(disposable);
+
+    disposable = vscode.commands.registerCommand('dakara-transformer.macroDelete', () => {
+        transforms.macroDelete()
     });
     context.subscriptions.push(disposable);
 
