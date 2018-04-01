@@ -103,6 +103,9 @@ export function activate(context: vscode.ExtensionContext) {
     });
     context.subscriptions.push(disposable);
 
+    disposable = vscode.commands.registerCommand('dakara-internal.oncommand', onCommand => onCommand());
+    context.subscriptions.push(disposable);
+
     disposable = vscode.commands.registerCommand('dakara-transformer.alignCursor', () => {
         const textEditor = vscode.window.activeTextEditor;
         const selections = textEditor.selections;
