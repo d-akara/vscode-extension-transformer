@@ -17,16 +17,21 @@ export interface MacroScriptExpression {
     commands: MacroCommand[]
 }
 
+function splitMacroTypeAndCommand(line:string) {
+    const indexOfSpace = line.indexOf(' ')
+    return [line.slice(0,indexOfSpace), line.slice(indexOfSpace + 1, line.length)]
+}
+
 export function parseScript(script:string) {
     const expression:MacroScriptExpression = {commands: []}
 
     const allLines = script.split(/\r?\n/);
     allLines.forEach(line => {
-        const [commandType, commandName] = line.split(' ', 2)
+        const [commandType, commandName] = splitMacroTypeAndCommand(line)
         if (commandType === 'v' || commandType === 'c' || commandType === 's')
             expression.commands.push({type: CommandType.VSCODE_COMMAND, command: commandName})
         if (commandType === 't')
-            expression.commands.push({type: CommandType.VSCODE_COMMAND, command: 'type', parameters: [{text: commandName}] })
+            expression.commands.push({type: CommandType.VSCODE_COMMAND, command: 'type', parameters: [{text: JSON.parse(commandName)}] })
     })
 
     return expression

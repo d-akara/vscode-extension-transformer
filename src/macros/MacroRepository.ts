@@ -1,13 +1,13 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs'
 
-interface Macro {
+export interface MacroScript {
     name: string
     content: string
 }
 
 interface MacroStorage {
-    macros: Macro[]
+    macros: MacroScript[]
 }
 
 let macroStore:MacroStorage = {macros:[]}
@@ -50,6 +50,20 @@ export async function fetchMacro(name:string) {
 }
 
 export function saveMacro(macroName:string, content:string) {
+    const indexOfExisting = macroStore.macros.findIndex(macroScript => macroScript.name === macroName)
+    if (indexOfExisting != -1) {
+        // remove old version
+        macroStore.macros.splice(indexOfExisting, 1)
+    }
     macroStore.macros.push({name:macroName, content})
+    return saveMacros(macroStore)
+}
+
+export function deleteMacro(macroName:string) {
+    const indexOfExisting = macroStore.macros.findIndex(macroScript => macroScript.name === macroName)
+    if (indexOfExisting != -1) {
+        // remove old version
+        macroStore.macros.splice(indexOfExisting, 1)
+    }
     return saveMacros(macroStore)
 }
