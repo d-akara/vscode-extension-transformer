@@ -6,13 +6,27 @@ import { Region,Lines,Modify,View,Application } from 'vscode-extension-common';
 import * as MacroRepository from './MacroRepository'
 import * as MacroExpression from './MacroExpression'
 
-const DEFAULT_SCRIPT = "// write macro\n" +
-                       "\n" +
+const DEFAULT_SCRIPT = "// - This Feature is BETA, scripts may not work in future versions ----------\n" +
+                       "// - macro commands:\n" +
+                       "//   t - text to type\n" +
+                       "//   c - cursor commands\n" +
+                       "//   s - selection commands\n" +
+                       "//   v - all vscode commands\n" +
                        "\n"
 
 const cursorDecorationType = View.createCursorDecoratorType()
 let currentMacroScript = ''
 let scriptEditor:vscode.TextEditor
+
+
+const codeLensChangeEvent = new vscode.EventEmitter<void>()
+vscode.languages.registerCodeLensProvider({language:'plaintext' }, {
+    provideCodeLenses: (document, cancel) => {
+        if (document.fileName !== 'Macro Preview.txt') return
+        return [View.makeCodeLens('set current text as starting point for macro', 0,0, updatePreviewTextInitialState)]
+    },
+    onDidChangeCodeLenses: codeLensChangeEvent.event
+})
 
 async function evalFunctionExpression(expression:string) {
     const macroExpression = MacroExpression.parseScript(expression)
@@ -68,36 +82,45 @@ export async function editMacro() {
     openMacroEditor(currentMacroScript)
 }
 
-let watcher:View.DocumentWatcher
-
+let scriptWatcher:View.DocumentWatcher
+let previewText = ''
+let previewSelections
+let previewDocument
 export async function openMacroEditor(defaultScript = DEFAULT_SCRIPT) {
     scriptEditor = await View.openShowDocument('New Macro Script.macro', defaultScript, false, 2)
     const previousFocusColumnNumber = vscode.window.activeTextEditor.viewColumn
-    const sourceEditor              = View.visibleTextEditorByColumn(1)
-    const sourceText                = sourceEditor.document.getText()
+    //const sourceEditor              = View.visibleTextEditorByColumn(1)
+    //const sourceText                = sourceEditor.document.getText() // TODO grab source text from preview when script editor cursor is before first command
     const macroScript               = scriptEditor.document.getText()
-    let   previewEditor             = await View.openShowDocument('Macro Preview.txt', sourceText, false, 3)
-    const previewDocument           = previewEditor.document
-    
-    previewEditor.selection = sourceEditor.selection
+    let   previewEditor             = await View.openShowDocument('Macro Preview.txt', 'sourceText', false, 3)
+    previewDocument                 = previewEditor.document
+    previewSelections               = previewEditor.selections
+
+    //previewEditor.selection = sourceEditor.selection
     previewEditor.setDecorations(cursorDecorationType, [View.createCursorDecorator(previewEditor.selection.anchor.line, previewEditor.selection.anchor.character)])
     View.setFocusOnEditorColumn(previousFocusColumnNumber)
 
-    if (watcher) watcher.dispose() // disconnect any previous watcher
-    watcher = View.watchDocument(scriptEditor.document, async event => {
+    if (scriptWatcher) scriptWatcher.dispose() // disconnect any previous watcher
+    scriptWatcher = View.watchDocument(scriptEditor.document, async event => {
         previewEditor = View.visibleTextEditorFromDocument(previewDocument)
         if (!previewEditor) return
+
         if (event.eventType === 'selection' && event.cursorMoved === 'vertical') {
             await previewEditor.edit(function (editBuilder) {
-                editBuilder.replace(Region.makeRangeDocument(previewEditor.document), sourceText);
+                editBuilder.replace(Region.makeRangeDocument(previewEditor.document), previewText);
             }, {undoStopAfter:false, undoStopBefore:false});
-
-            previewEditor.selection = sourceEditor.selection
+            
+            previewEditor.selections = previewSelections
             const scriptContent = Region.makeRangeFromStartToLine(scriptEditor.document, scriptEditor.selection.end.line)
             currentMacroScript = scriptEditor.document.getText(scriptContent)
             await evalFunctionExpressionAsPreview(currentMacroScript, previewEditor)
         }
     })
+}
+
+export function updatePreviewTextInitialState() {
+    previewText = previewDocument.getText()
+    previewSelections = View.visibleTextEditorFromDocument(previewDocument).selections
 }
 
 export async function saveScript() {

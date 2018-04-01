@@ -16,6 +16,7 @@
         "Other"
     ],
     "activationEvents": [
+        "onCommand:dakara-internal.oncommand",
         "onCommand:dakara-transformer.alignCSV",
         "onCommand:dakara-transformer.alignCursor",
         "onCommand:dakara-transformer.commands",
@@ -66,6 +67,11 @@
                 "command": "dakara-transformer.macroSave",
                 "title": "Macro Script Save...",
                 "category": "Transform"
+            },
+            {
+                "command": "dakara-internal.oncommand",
+                "title": "internal use only",
+                "category": "Dakara Internal"
             },
             {
                 "command": "dakara-transformer.filter",
@@ -128,6 +134,11 @@
                 "category": "Transform"
             }
         ],
+        "menus": {
+            "commandPalette": [
+                {"command": "dakara-internal.oncommand", "when": "false"}
+            ]
+        },
         "languages": [{
             "id": "macro",
             "aliases": [
