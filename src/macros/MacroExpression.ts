@@ -1,10 +1,12 @@
-import { MacroCommand, MacroScriptExpression } from './MacroExpression';
 import * as vscode from 'vscode';
+import * as ExtendedCommands from './ExtendedCommands'
+
 
 registerCompletionProvider()
 
 export enum CommandType {
-    VSCODE_COMMAND
+    VSCODE_COMMAND,
+    EXTENDED_COMMAND
 }
 
 export interface MacroCommand {
@@ -22,16 +24,25 @@ function splitMacroTypeAndCommand(line:string) {
     return [line.slice(0,indexOfSpace), line.slice(indexOfSpace + 1, line.length)]
 }
 
+function splitCommandAndParameter(commandAndParameter:string) {
+
+    return commandAndParameter.split(' ', 2)
+}
+
 export function parseScript(script:string) {
     const expression:MacroScriptExpression = {commands: []}
 
     const allLines = script.split(/\r?\n/);
     allLines.forEach(line => {
-        const [commandType, commandName] = splitMacroTypeAndCommand(line)
+        const [commandType, commandPart] = splitMacroTypeAndCommand(line)
         if (commandType === 'v' || commandType === 'c' || commandType === 's')
-            expression.commands.push({type: CommandType.VSCODE_COMMAND, command: commandName})
+            expression.commands.push({type: CommandType.VSCODE_COMMAND, command: commandPart})
         if (commandType === 't')
-            expression.commands.push({type: CommandType.VSCODE_COMMAND, command: 'type', parameters: [{text: JSON.parse(commandName)}] })
+            expression.commands.push({type: CommandType.VSCODE_COMMAND, command: 'type', parameters: [{text: JSON.parse(commandPart)}] })
+        if (commandType === 'x') {
+            const [command, parameter] = splitCommandAndParameter(commandPart)
+            expression.commands.push({type: CommandType.EXTENDED_COMMAND, command, parameters: [parameter] })
+        }
     })
 
     return expression
@@ -39,6 +50,7 @@ export function parseScript(script:string) {
 
 export async function registerCompletionProvider() {
     const commands = await vscode.commands.getCommands(true).then(commandList => commandList);
+    const extendedCommands = ExtendedCommands.getCommands()
     
     vscode.languages.registerCompletionItemProvider('macro', {
         provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext) {
@@ -54,6 +66,8 @@ export async function registerCompletionProvider() {
                                .map(prompt => new vscode.CompletionItem('s ' + prompt, vscode.CompletionItemKind.Variable))
             if (character === 'v')
                 return commands.map(prompt => new vscode.CompletionItem('v ' + prompt, vscode.CompletionItemKind.Variable))
+            if (character === 'x')
+                return extendedCommands.map(extendedCommand => new vscode.CompletionItem('x ' + extendedCommand.name, vscode.CompletionItemKind.Variable))
         }
     });
 }
