@@ -6,6 +6,7 @@ import { Region,Lines,Modify,View,Application } from 'vscode-extension-common';
 import * as MacroRepository from './MacroRepository'
 import * as MacroExpression from './MacroExpression'
 import * as ExtendedCommands from './ExtendedCommands'
+import { linesAsJSON } from '../Transforms';
 
 const DEFAULT_SCRIPT = "// - This Feature is BETA, scripts may not work in future versions\n" +
                        "// - macro commands:\n" +
@@ -76,12 +77,21 @@ async function pickMacro():Promise<void|View.QuickPickActionable> {
 }
 
 export function runCurrentMacro() {
-    evalFunctionExpression(currentMacroScript.content)
+    if (vscode.window.activeTextEditor.selection.isEmpty) 
+        return evalFunctionExpression(currentMacroScript.content)
+    else
+        return runCurrentMacroEachLine(vscode.window.activeTextEditor.selection)    
+}
+
+export async function runCurrentMacroEachLine(selection:vscode.Selection) {
+    const editor = vscode.window.activeTextEditor
+    for (let line = selection.start.line; line <= selection.end.line; line++) {
+        editor.selection = new vscode.Selection(line, 0, line, 0)
+        await evalFunctionExpression(currentMacroScript.content)
+    }
 }
 
 export async function createMacro() {
-    // TODO set default preview text with current selection if exists
-    
     const selectedText = vscode.window.activeTextEditor.document.getText(vscode.window.activeTextEditor.selection)
     if (selectedText) previewText = selectedText
     else previewText = ''
