@@ -18,6 +18,7 @@
 * [Copy To New Document](#copy-to-new-document)
 * [Select Lines](#select-lines)
 * [Lines As JSON](#lines-as-json)
+* [Macros](#macros)
 
 ### Unique Lines
 - Removes duplicate lines from the document
@@ -85,3 +86,6 @@
 - Useful for easily creating snippet bodies with selected text
 
 ![ScreenShot](/readme-images/lines-as-json.gif)
+
+### Macros
+- [Experimental feature to provide text editor macros as scripts](https://github.com/dakaraphi/vscode-extension-transformer/issues/13)
