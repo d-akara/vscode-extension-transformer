@@ -1,3 +1,7 @@
+## 1.5.0
+- New Feature `Macro Scripts`
+  - Write text editor macros as scripts
+  - Currently this feature is Experimental - for reference https://github.com/dakaraphi/vscode-extension-transformer/issues/13
 ## 1.4.0
 - Enhanced `Filter Lines As New Document` command
   - Realtime filtering as you type for smaller documents
