@@ -34,11 +34,12 @@ export function sortLinesByLength(textEditor: vscode.TextEditor, ranges: Array<v
     Modify.sortLinesByLength(textEditor, linesToSort);
 }
 export function trimLines(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
-    const trimLinesB = edit.linesFromRange(textEditor.document, ranges[0])
+    let trimmedResult = "";
+    const trimLinesB = Lines.linesFromRange(textEditor.document, ranges[0])
    for(const line of trimLinesB) {
-       line.text.trim()
+       trimmedResult += line.text.trim() + '\n'
    }
-   
+   Modify.replace(textEditor,ranges[0],trimmedResult)
 }
 export function uniqueLines(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
     if(ranges.length === 1) {
