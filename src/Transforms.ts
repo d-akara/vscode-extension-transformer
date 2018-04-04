@@ -33,7 +33,13 @@ export function sortLinesByLength(textEditor: vscode.TextEditor, ranges: Array<v
     const linesToSort = linesFromRangesExpandBlockIfEmpty(textEditor, ranges);
     Modify.sortLinesByLength(textEditor, linesToSort);
 }
-
+export function trimLines(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
+    const trimLinesB = edit.linesFromRange(textEditor.document, ranges[0])
+   for(const line of trimLinesB) {
+       line.text.trim()
+   }
+   
+}
 export function uniqueLines(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
     if(ranges.length === 1) {
         const rangeBlock = Region.expandRangeToBlockIfEmpty(textEditor, ranges[0]);

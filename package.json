@@ -35,7 +35,10 @@
         "onCommand:dakara-transformer.sortByLineLength",
         "onCommand:dakara-transformer.sortLines",
         "onCommand:dakara-transformer.uniqueLines",
-        "onCommand:dakara-transformer.uniqueLinesNewDocument"
+        "onCommand:dakara-transformer.uniqueLinesNewDocument",
+        "onCommand:dakara-transformer.sortByLineLength",
+        "onCommand:dakara-transformer.trimLines"
+        
     ],
     "main": "./out/extension",
     "contributes": {
@@ -137,6 +140,11 @@
             {
                 "command": "dakara-transformer.linesAsJSON",
                 "title": "Lines As JSON",
+                "category": "Transform"
+            },
+            {
+                "command": "dakara-transformer.trimLines",
+                "title": "Trim Lines",
                 "category": "Transform"
             }
         ],
