@@ -241,7 +241,8 @@ export function alignToCursor(textEditor: vscode.TextEditor, ranges: Array<vscod
 }
 
 export async function alignCSV(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
-    const delimeter = await vscode.window.showInputBox({prompt:'Specify Delimiter', value: ','});
+    const userInput = await vscode.window.showInputBox({prompt:'Specify Delimiter', value: ','});
+    const delimeter = JSON.parse(('\"' + userInput + '\"'));
     const lines = linesFromRangesExpandBlockIfEmpty(textEditor, ranges);
     const linesParts = lines.map(line=>line.text.split(delimeter));
     const newLineTexts:string[] = []
@@ -285,7 +286,8 @@ function maxLength(texts:string[][], partIndex:number) {
 }
 
 export async function compactCSV(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
-    const delimeter = await vscode.window.showInputBox({prompt:'Specify Delimiter', value: ','});
+    const userInput = await vscode.window.showInputBox({prompt:'Specify Delimiter', value: ','});
+    const delimeter = JSON.parse(('\"' + userInput + '\"'));
     const lines = linesFromRangesExpandBlockIfEmpty(textEditor, ranges);
     const linesParts = lines.map(line=>line.text.split(delimeter));
     const newLineTexts:string[] = []
