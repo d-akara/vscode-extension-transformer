@@ -61,6 +61,13 @@ export function activate(context: vscode.ExtensionContext) {
         transforms.uniqueLinesToNewDocument(textEditor, selections);
     });
     context.subscriptions.push(disposable);
+    
+    disposable = vscode.commands.registerCommand('dakara-transformer.countUniqueLinesNewDocument', () => {
+        const textEditor = vscode.window.activeTextEditor;
+        const selections = textEditor.selections;
+        transforms.countUniqueLinesToNewDocument(textEditor, selections);
+    });
+    context.subscriptions.push(disposable);
 
     disposable = vscode.commands.registerCommand('dakara-transformer.sortByLineLength', () => {
         const textEditor = vscode.window.activeTextEditor;
