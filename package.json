@@ -35,6 +35,7 @@
         "onCommand:dakara-transformer.sortLines",
         "onCommand:dakara-transformer.uniqueLines",
         "onCommand:dakara-transformer.uniqueLinesNewDocument",
+        "onCommand:dakara-transformer.countUniqueLinesNewDocument"
         "onCommand:dakara-transformer.sortByLineLength",
         "onCommand:dakara-transformer.trimLines"
         
@@ -124,6 +125,11 @@
             {
                 "command": "dakara-transformer.sortByLineLength",
                 "title": "Sort Lines By Length",
+                "category": "Transform"
+            },
+            {
+                "command": "dakara-transformer.countUniqueLinesNewDocument",
+                "title": "Count Unique Lines As New Document",
                 "category": "Transform"
             },
             {

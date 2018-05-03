@@ -68,6 +68,26 @@ export function uniqueLinesToNewDocument(textEditor: vscode.TextEditor, ranges: 
     const linesArray = Array.from(uniqueLines);
     View.openShowDocument(originName(textEditor), Lines.textFromLines(textEditor.document, linesArray));
 }
+export function countUniqueLinesToNewDocument(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
+    const lines = linesFromRangesExpandBlockIfEmpty(textEditor, ranges);
+    const duplicateNumbers = 0;
+    const countMap = new Map()
+    const uniqueMap = new Map()
+    lines.forEach(line => {
+        uniqueMap.set(line.text, line);
+        let count = countMap.get(line.text)
+        if(!count) count = 0
+        countMap.set(line.text,count + 1)
+    });
+    
+    const uniqueLines = uniqueMap.values()
+    const linesArray = Array.from(uniqueLines);
+    let displayText = "";
+    for(let line of linesArray) {
+        displayText += countMap.get(line.text) + " " + ":" + " " + line.text + "\n";
+    }
+    View.openShowDocument(originName(textEditor), displayText)
+}
 
 export function filterLines(textEditor: vscode.TextEditor, selection:vscode.Selection) {
     const selectedText = Lines.textOfLineSelectionOrWordAtCursor(textEditor.document, selection);
