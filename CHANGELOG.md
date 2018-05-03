@@ -1,3 +1,7 @@
+## 1.6.0
+- Added `Count Duplicate Lines As New Document` which will count the number of occurrences of each line
+- Added `Trim Lines` which will trim beginning and ending of lines selected
+- Improved `Align CSV` and `Compact CSV` to allow for specifying custom delimiter
 ## 1.5.0
 - New Feature `Macro Scripts`
   - Write text editor macros as scripts

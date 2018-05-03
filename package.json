@@ -2,7 +2,7 @@
     "name": "transformer",
     "displayName": "Transformer",
     "description": "Filter, Sort, Unique, Reverse, Align, CSV, Line Selection, Text Transformations and Macros",
-    "version": "1.5.1",
+    "version": "1.6.0",
     "icon": "transformer-icon.png",
     "repository": {
         "type": "git",
@@ -10,7 +10,7 @@
     },
     "publisher": "dakara",
     "engines": {
-        "vscode": "^1.18.0"
+        "vscode": "^1.22.0"
     },
     "categories": [
         "Other"
@@ -22,6 +22,7 @@
         "onCommand:dakara-transformer.commands",
         "onCommand:dakara-transformer.compactCSV",
         "onCommand:dakara-transformer.copyToNewDocument",
+        "onCommand:dakara-transformer.countUniqueLinesNewDocument",
         "onCommand:dakara-transformer.filter",
         "onCommand:dakara-transformer.filterAsNewDocument",
         "onCommand:dakara-transformer.macroCreate",
@@ -35,7 +36,6 @@
         "onCommand:dakara-transformer.sortLines",
         "onCommand:dakara-transformer.uniqueLines",
         "onCommand:dakara-transformer.uniqueLinesNewDocument",
-        "onCommand:dakara-transformer.countUniqueLinesNewDocument"
         "onCommand:dakara-transformer.sortByLineLength",
         "onCommand:dakara-transformer.trimLines"
         
@@ -129,7 +129,7 @@
             },
             {
                 "command": "dakara-transformer.countUniqueLinesNewDocument",
-                "title": "Count Unique Lines As New Document",
+                "title": "Count Duplicate Lines As New Document",
                 "category": "Transform"
             },
             {
