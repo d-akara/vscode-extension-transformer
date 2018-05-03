@@ -76,7 +76,7 @@ export function countUniqueLinesToNewDocument(textEditor: vscode.TextEditor, ran
     const linesArray = Array.from(uniqueLines);
     let displayText = "";
     for(let line of linesArray) {
-        displayText += countMap.get(line.text) + " " + line.text + "\n";
+        displayText += countMap.get(line.text) + " " + ":" + " " + line.text + "\n";
     }
     View.openShowDocument(originName(textEditor), displayText)
 }
