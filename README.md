@@ -18,6 +18,8 @@
 * [Copy To New Document](#copy-to-new-document)
 * [Select Lines](#select-lines)
 * [Lines As JSON](#lines-as-json)
+* [Trim Lines](#trim-lines)
+* [Count Duplicate Lines As New Document](#count-duplicate-lines-as-new-document)
 * [Macros](#macros)
 
 ### Unique Lines
@@ -67,7 +69,7 @@
 ![ScreenShot](/readme-images/align-cursor.gif)
 
 ### Align CSV
-- Aligns CSV text into columns
+- Aligns CSV text into columns.  Can also specify custom delimiter.
 
 ![ScreenShot](/readme-images/align-csv.gif)
 
@@ -86,6 +88,12 @@
 - Useful for easily creating snippet bodies with selected text
 
 ![ScreenShot](/readme-images/lines-as-json.gif)
+
+### Trim Lines
+- Remove whitespace at beginning and end of lines
+
+### Count Duplicate Lines As New Document
+- Count the number of instances of each unique line
 
 ### Macros
 - [Experimental feature to provide text editor macros as scripts](https://github.com/dakaraphi/vscode-extension-transformer/issues/13)
