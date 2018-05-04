@@ -4,6 +4,7 @@ import * as vscode from 'vscode';
 import {Lines,Modify,Region,View} from 'vscode-extension-common'
 import * as MacroBuilder from './macros/MacroBuilder'
 import * as MacroRepository from './macros/MacroRepository'
+import { userInfo } from 'os';
 
 const gutterDecorationType = vscode.window.createTextEditorDecorationType({
     rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed
@@ -33,7 +34,14 @@ export function sortLinesByLength(textEditor: vscode.TextEditor, ranges: Array<v
     const linesToSort = linesFromRangesExpandBlockIfEmpty(textEditor, ranges);
     Modify.sortLinesByLength(textEditor, linesToSort);
 }
-
+export function trimLines(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
+    let trimmedResult = "";
+    const trimLinesB = Lines.linesFromRange(textEditor.document, ranges[0])
+   for(const line of trimLinesB) {
+       trimmedResult += line.text.trim() + '\n'
+   }
+   Modify.replace(textEditor,ranges[0],trimmedResult)
+}
 export function uniqueLines(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
     if(ranges.length === 1) {
         const rangeBlock = Region.expandRangeToBlockIfEmpty(textEditor, ranges[0]);
@@ -260,16 +268,18 @@ export function alignToCursor(textEditor: vscode.TextEditor, ranges: Array<vscod
     })
 }
 
-export function alignCSV(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
+export async function alignCSV(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
+    const userInput = await vscode.window.showInputBox({prompt:'Specify Delimiter', value: ','});
+    const delimeter = JSON.parse(('\"' + userInput + '\"'));
     const lines = linesFromRangesExpandBlockIfEmpty(textEditor, ranges);
-    const linesParts = lines.map(line=>line.text.split(','));
+    const linesParts = lines.map(line=>line.text.split(delimeter));
     const newLineTexts:string[] = []
     const linePartCount = linesParts[0].length;
     for (let columnIndex = 0; columnIndex < linePartCount; columnIndex++) {
         const max = maxLength(linesParts, 0);
         appendColumn(newLineTexts, linesParts, max);
         if (columnIndex != linePartCount - 1)
-            appendDelimeter(newLineTexts, ',');
+            appendDelimeter(newLineTexts, delimeter);
     }
 
     Modify.replaceLinesWithText(textEditor, lines, newLineTexts);
@@ -303,16 +313,18 @@ function maxLength(texts:string[][], partIndex:number) {
     })
 }
 
-export function compactCSV(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
+export async function compactCSV(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
+    const userInput = await vscode.window.showInputBox({prompt:'Specify Delimiter', value: ','});
+    const delimeter = JSON.parse(('\"' + userInput + '\"'));
     const lines = linesFromRangesExpandBlockIfEmpty(textEditor, ranges);
-    const linesParts = lines.map(line=>line.text.split(','));
+    const linesParts = lines.map(line=>line.text.split(delimeter));
     const newLineTexts:string[] = []
     const linePartCount = linesParts[0].length;
     for (let columnIndex = 0; columnIndex < linePartCount; columnIndex++) {
         const max = maxLength(linesParts, 0);
         compactColumn(newLineTexts, linesParts, max);
         if (columnIndex != linePartCount - 1)
-            appendDelimeter(newLineTexts, ',');
+            appendDelimeter(newLineTexts, delimeter);
     }
 
     Modify.replaceLinesWithText(textEditor, lines, newLineTexts);
