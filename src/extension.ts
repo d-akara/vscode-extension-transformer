@@ -5,10 +5,7 @@ import {Modify, View, Application} from 'vscode-extension-common'
 /**
  * TODO - planned features:
  * - unique selections as new document
- * - unique words as new document
  * - filter sections based on text found in levels to the right
- * - count unique lines to new document, duplicates
- * - trim lines
  * - trim identical parts of lines
  * - sort folding regions / sort sections as determined by each cursor location
  * - split/join lines using token or expression
@@ -19,11 +16,7 @@ import {Modify, View, Application} from 'vscode-extension-common'
  *  - remove selections containing...
  *  - all lines with same level
  *  - expand selection that can work with multiple cursors
- * - scrapbook transformations
- * - escapes and unescapes
- * - hex/bin/dec
  * - wrap at designated length
- * - selection as single JSON string
  */
 
 interface LinkedDocument {
@@ -73,6 +66,13 @@ export function activate(context: vscode.ExtensionContext) {
         const textEditor = vscode.window.activeTextEditor;
         const selections = textEditor.selections;
         transforms.sortLinesByLength(textEditor, selections);
+    });
+    context.subscriptions.push(disposable);
+
+    disposable = vscode.commands.registerCommand('dakara-transformer.trimLines', () => {
+        const textEditor = vscode.window.activeTextEditor;
+        const selections = textEditor.selections;
+        transforms.trimLines(textEditor, selections);
     });
     context.subscriptions.push(disposable)
     

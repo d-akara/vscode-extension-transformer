@@ -32,12 +32,15 @@
         "onCommand:dakara-transformer.linesAsJSON",
         "onCommand:dakara-transformer.reverseLines",
         "onCommand:dakara-transformer.selectLines",
-        "onCommand:dakara-transformer.sortByLineLength",
         "onCommand:dakara-transformer.sortLines",
         "onCommand:dakara-transformer.uniqueLines",
         "onCommand:dakara-transformer.uniqueLinesNewDocument",
         "onCommand:dakara-transformer.countUniqueLinesNewDocument",
-        "onCommand:dakara-transformer.selectJSONString"
+        "onCommand:dakara-transformer.selectJSONString",
+        "onCommand:dakara-transformer.countUniqueLinesNewDocument",
+        "onCommand:dakara-transformer.sortByLineLength",
+        "onCommand:dakara-transformer.trimLines"
+        
     ],
     "main": "./out/extension",
     "contributes": {
@@ -150,6 +153,11 @@
                 "command": "dakara-transformer.selectJSONString",
                 "title": "Selection as JSON String",
                 "category": "Transform"
+            },
+            {   "command": "dakara-transformer.trimLines",
+                "title": "Trim Lines",
+                "category": "Transform"
+                
             }
         ],
         "menus": {
