@@ -36,7 +36,8 @@
         "onCommand:dakara-transformer.sortLines",
         "onCommand:dakara-transformer.uniqueLines",
         "onCommand:dakara-transformer.uniqueLinesNewDocument",
-        "onCommand:dakara-transformer.countUniqueLinesNewDocument"
+        "onCommand:dakara-transformer.countUniqueLinesNewDocument",
+        "onCommand:dakara-transformer.selectJSONString"
     ],
     "main": "./out/extension",
     "contributes": {
@@ -143,6 +144,11 @@
             {
                 "command": "dakara-transformer.linesAsJSON",
                 "title": "Lines As JSON",
+                "category": "Transform"
+            },
+            {
+                "command": "dakara-transformer.selectJSONString",
+                "title": "Selection as JSON String",
                 "category": "Transform"
             }
         ],
