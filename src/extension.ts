@@ -76,6 +76,14 @@ export function activate(context: vscode.ExtensionContext) {
     });
     context.subscriptions.push(disposable)
     
+    
+    disposable = vscode.commands.registerCommand('dakara-transformer.selectJSONString', () => {
+        const textEditor = vscode.window.activeTextEditor;
+        const selection = textEditor.selection;
+        transforms.selectJSONString(textEditor, selection);
+    });
+    context.subscriptions.push(disposable)
+    
     disposable = vscode.commands.registerCommand('dakara-transformer.filter', () => {
         const textEditor = vscode.window.activeTextEditor;
         const selection = textEditor.selection;
