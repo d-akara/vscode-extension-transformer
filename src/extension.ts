@@ -79,8 +79,8 @@ export function activate(context: vscode.ExtensionContext) {
     
     disposable = vscode.commands.registerCommand('dakara-transformer.selectJSONString', () => {
         const textEditor = vscode.window.activeTextEditor;
-        const selections = textEditor.selections;
-        transforms.selectJSONString(textEditor, selections);
+        const selection = textEditor.selection;
+        transforms.selectJSONString(textEditor, selection);
     });
     context.subscriptions.push(disposable)
     
