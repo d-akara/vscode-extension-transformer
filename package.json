@@ -2,7 +2,7 @@
     "name": "transformer",
     "displayName": "Transformer",
     "description": "Filter, Sort, Unique, Reverse, Align, CSV, Line Selection, Text Transformations and Macros",
-    "version": "1.6.0",
+    "version": "1.7.0",
     "icon": "transformer-icon.png",
     "repository": {
         "type": "git",
@@ -151,7 +151,7 @@
             },
             {
                 "command": "dakara-transformer.selectJSONString",
-                "title": "Selection as JSON String",
+                "title": "Selection As JSON String",
                 "category": "Transform"
             },
             {   "command": "dakara-transformer.trimLines",
