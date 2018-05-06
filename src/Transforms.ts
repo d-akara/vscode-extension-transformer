@@ -103,6 +103,13 @@ export function filterLines(textEditor: vscode.TextEditor, selection:vscode.Sele
         })
 }
 
+export function selectJSONString(textEditor: vscode.TextEditor, selection:vscode.Selection) {
+
+    const result =  JSON.stringify(textEditor.document.getText(selection))
+    Modify.replace(textEditor , selection , result )
+    
+}
+
 export function filterLinesToNewDocument(textEditor: vscode.TextEditor, selection:vscode.Selection) {
     const selectedText = Lines.textOfLineSelectionOrWordAtCursor(textEditor.document, selection);
     // If we have multiple lines selected, use that as source to filter, else the entire document
