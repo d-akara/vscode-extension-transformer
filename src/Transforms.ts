@@ -103,11 +103,10 @@ export function filterLines(textEditor: vscode.TextEditor, selection:vscode.Sele
         })
 }
 
-export function selectJSONString(textEditor: vscode.TextEditor, ranges:Array<vscode.Range>) {
-    const linias = linesFromRangesExpandBlockIfEmpty(textEditor, ranges)
-    const result =  JSON.stringify(Lines.textFromLines(textEditor.document, linias))
-    const rangeBlock = Region.expandRangeToBlockIfEmpty(textEditor, ranges[0]);
-    Modify.replace(textEditor , rangeBlock , result )
+export function selectJSONString(textEditor: vscode.TextEditor, selection:vscode.Selection) {
+
+    const result =  JSON.stringify(textEditor.document.getText(selection))
+    Modify.replace(textEditor , selection , result )
     
 }
 
