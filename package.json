@@ -39,7 +39,8 @@
         "onCommand:dakara-transformer.countUniqueLinesNewDocument",
         "onCommand:dakara-transformer.selectJSONString",
         "onCommand:dakara-transformer.sortByLineLength",
-        "onCommand:dakara-transformer.trimLines"
+        "onCommand:dakara-transformer.trimLines",
+        "onCommand:dakara-transformer.randomLines"
         
     ],
     "main": "./out/extension",
@@ -156,6 +157,11 @@
             },
             {   "command": "dakara-transformer.trimLines",
                 "title": "Trim Lines",
+                "category": "Transform"
+                
+            },
+            {   "command": "dakara-transformer.randomLines",
+                "title": "Randomize Lines",
                 "category": "Transform"
                 
             }

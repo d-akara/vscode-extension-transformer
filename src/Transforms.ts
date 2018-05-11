@@ -30,10 +30,27 @@ export function sortLines(textEditor: vscode.TextEditor, ranges: Array<vscode.Ra
         Modify.sortLinesByColumn(textEditor, ranges);
     } 
 }
+
+export function randomizeLines(textEditor: vscode.TextEditor, range: vscode.Range) {
+    const lines = Lines.linesFromRange(textEditor.document, range);
+    const randomLines = lines.slice(0, lines.length)
+    const randomizedLines = randomize(randomLines)
+    Modify.replaceLines(textEditor, lines, randomizedLines)
+}
+
+function randomize(lines) {
+    for (let i = lines.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [lines[i], lines[j]] = [lines[j], lines[i]];
+    }
+    return lines;
+}
+
 export function sortLinesByLength(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
     const linesToSort = linesFromRangesExpandBlockIfEmpty(textEditor, ranges);
     Modify.sortLinesByLength(textEditor, linesToSort);
 }
+
 export function trimLines(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
     let trimmedResult = "";
     const trimLinesB = Lines.linesFromRange(textEditor.document, ranges[0])
