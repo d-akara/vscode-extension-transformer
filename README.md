@@ -18,7 +18,9 @@
 * [Copy To New Document](#copy-to-new-document)
 * [Select Lines](#select-lines)
 * [Lines As JSON](#lines-as-json)
+* [Selection As JSON String](#selection-as-json-string)
 * [Trim Lines](#trim-lines)
+* [Randomize Lines](#randomize-lines)
 * [Count Duplicate Lines As New Document](#count-duplicate-lines-as-new-document)
 * [Macros](#macros)
 
@@ -89,8 +91,14 @@
 
 ![ScreenShot](/readme-images/lines-as-json.gif)
 
+### Selection As JSON String
+- Transform all contents of selection as a single JSON String
+
 ### Trim Lines
 - Remove whitespace at beginning and end of lines
+
+### Randomize Lines
+- Randomize the order of selected lines
 
 ### Count Duplicate Lines As New Document
 - Count the number of instances of each unique line

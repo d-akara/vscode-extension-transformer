@@ -1,4 +1,5 @@
 ## 1.7.0
+- Added `Randomize Lines`
 - Added `Selection As JSON String`
 
 ## 1.6.0
