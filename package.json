@@ -2,7 +2,7 @@
     "name": "transformer",
     "displayName": "Transformer",
     "description": "Filter, Sort, Unique, Reverse, Align, CSV, Line Selection, Text Transformations and Macros",
-    "version": "1.5.1",
+    "version": "1.6.0",
     "icon": "transformer-icon.png",
     "repository": {
         "type": "git",
@@ -10,7 +10,7 @@
     },
     "publisher": "dakara",
     "engines": {
-        "vscode": "^1.18.0"
+        "vscode": "^1.47.0"
     },
     "categories": [
         "Other"
@@ -30,18 +30,21 @@
         "onCommand:dakara-transformer.macroRepeat",
         "onCommand:dakara-transformer.macroRun",
         "onCommand:dakara-transformer.linesAsJSON",
+        "onCommand:dakara-transformer.selectionAsJSON",
+        "onCommand:dakara-transformer.JsonAsText",
         "onCommand:dakara-transformer.reverseLines",
         "onCommand:dakara-transformer.selectLines",
         "onCommand:dakara-transformer.sortLines",
         "onCommand:dakara-transformer.uniqueLines",
         "onCommand:dakara-transformer.uniqueLinesNewDocument",
         "onCommand:dakara-transformer.sortByLineLength",
-        "onCommand:dakara-transformer.trimLines"
-        
+        "onCommand:dakara-transformer.trimLines",
+        "onCommand:dakara-transformer.escapes"
     ],
     "main": "./out/extension",
     "contributes": {
-        "commands": [{
+        "commands": [
+            {
                 "command": "dakara-transformer.sortLines",
                 "title": "Sort Lines",
                 "category": "Transform"
@@ -138,35 +141,57 @@
             },
             {
                 "command": "dakara-transformer.linesAsJSON",
-                "title": "Lines As JSON",
+                "title": "Lines As JSON String Array",
+                "category": "Transform"
+            },
+            {
+                "command": "dakara-transformer.selectionAsJSON",
+                "title": "Selection As JSON String",
+                "category": "Transform"
+            },
+            {
+                "command": "dakara-transformer.JsonAsText",
+                "title": "JSON String As Text",
                 "category": "Transform"
             },
             {
                 "command": "dakara-transformer.trimLines",
                 "title": "Trim Lines",
                 "category": "Transform"
+            },
+            {
+                "command": "dakara-transformer.escapes",
+                "title": "Encode / Decode ...",
+                "category": "Transform"
             }
         ],
         "menus": {
             "commandPalette": [
-                {"command": "dakara-internal.oncommand", "when": "false"}
+                {
+                    "command": "dakara-internal.oncommand",
+                    "when": "false"
+                }
             ]
         },
-        "languages": [{
-            "id": "macro",
-            "aliases": [
-                "macro"
-            ],
-            "extensions": [
-                ".macro"
-            ],
-            "configuration": "./language-configuration.json"
-        }],
-        "grammars": [{
-            "language": "macro",
-            "scopeName": "source.macro",
-            "path": "./macro.tmLanguage"
-        }]
+        "languages": [
+            {
+                "id": "macro",
+                "aliases": [
+                    "macro"
+                ],
+                "extensions": [
+                    ".macro"
+                ],
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "macro",
+                "scopeName": "source.macro",
+                "path": "./macro.tmLanguage"
+            }
+        ]
     },
     "scripts": {
         "vscode:prepublish": "tsc -p ./",
@@ -176,13 +201,12 @@
         "test": "node ./node_modules/vscode/bin/test"
     },
     "devDependencies": {
-        "@types/mocha": "^2.2.46",
-        "@types/node": "^8.9.5",
-        "mocha": "^2.3.3",
-        "typescript": "^2.7.2",
-        "vscode": "^1.1.14"
+        "@types/node": "^14.0.27",
+        "typescript": "^3.9.7",
+        "vscode": "^1.1.37"
     },
     "dependencies": {
+        "md5": "2.3.0",
         "vscode-extension-common": "file:../vscode-extension-common"
     }
 }

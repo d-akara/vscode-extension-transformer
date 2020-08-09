@@ -4,6 +4,7 @@ import * as vscode from 'vscode';
 import {Lines,Modify,Region,View} from 'vscode-extension-common'
 import * as MacroBuilder from './macros/MacroBuilder'
 import * as MacroRepository from './macros/MacroRepository'
+import * as md5 from 'md5'
 
 const gutterDecorationType = vscode.window.createTextEditorDecorationType({
     rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed
@@ -328,4 +329,56 @@ export function linesAsJSON(textEditor: vscode.TextEditor) {
     const lines = Lines.linesFromRange(textEditor.document, textEditor.selection)
     const jsonLines = lines.map(line=>JSON.stringify(line.text) + ",")
     Modify.replaceLinesWithText(textEditor, lines, jsonLines);
+}
+
+export function selectionAsJSON(textEditor: vscode.TextEditor) {
+    Modify.replaceUsingTransform(textEditor, textEditor.selections, text => JSON.stringify(text))
+}
+
+export function jsonStringAsText(textEditor: vscode.TextEditor) {
+    Modify.replaceUsingTransform(textEditor, textEditor.selections, text => JSON.parse(text))
+}
+
+export function escapes(textEditor: vscode.TextEditor) {
+    const selections = textEditor.selections
+
+    const encodeBase64        = View.makeOption({label: 'Encode Base64', description: 'encode as base64'})
+    const decodeBase64        = View.makeOption({label: 'Decode Base64', description: 'decode from base64'})
+    const encodeUrlSegment    = View.makeOption({label: 'Encode URL Segment', description: 'encode using encodeURIComponent()'})
+    const decodeUrlSegment    = View.makeOption({label: 'Decode URL Segment', description: 'decode using decodeURIComponent()'})
+    const encodeFormUrl       = View.makeOption({label: 'Encode x-www-form-urlencoded,', description: `form url encoding with spaces as '+'`})
+    const decodeFormUrl       = View.makeOption({label: 'Decode x-www-form-urlencoded,', description: `form url decoding with spaces as '+'`})
+    const encodeMD5           = View.makeOption({label: 'Encode MD5',    description: 'encode as MD5'})
+
+    View.promptOptions([
+        encodeBase64,
+        decodeBase64,
+        encodeUrlSegment,
+        decodeUrlSegment,
+        encodeFormUrl,
+        decodeFormUrl,
+        encodeMD5
+    ], (item, action)=>{
+        if (encodeBase64 === item) {
+            Modify.replaceUsingTransform(textEditor, selections, text => Buffer.from(text, 'binary').toString('base64'))
+        } 
+        else if (decodeBase64 === item) {
+            Modify.replaceUsingTransform(textEditor, selections, text => Buffer.from(text, 'base64').toString('binary'))
+        } 
+        else if (encodeMD5 === item) {
+            Modify.replaceUsingTransform(textEditor, selections, text => md5(text))
+        } 
+        else if (encodeUrlSegment === item) {
+            Modify.replaceUsingTransform(textEditor, selections, text => encodeURIComponent(text))
+        }
+        else if (decodeUrlSegment === item) {
+            Modify.replaceUsingTransform(textEditor, selections, text => decodeURIComponent(text))
+        }
+        else if (encodeFormUrl === item) {
+            Modify.replaceUsingTransform(textEditor, selections, text => encodeURIComponent(text).replace(/\%20/g, '+'))
+        }
+        else if (decodeFormUrl === item) {
+            Modify.replaceUsingTransform(textEditor, selections, text => decodeURIComponent(text.replace(/\+/g, '%20')))
+        }
+    })
 }
