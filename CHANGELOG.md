@@ -1,3 +1,18 @@
+## 1.6.0
+- New Features
+  - `Encode / Decode ...`
+    - Decode Base64
+    - Encode Base64
+    - Encode URL Segment
+    - Decode URL Segment
+    - Encode x-www-form-urlencoded
+    - Decode x-www-form-urlencoded
+    - Encode MD5
+  - `Selection As JSON String` converts all text in selection to single escaped JSON string
+  - `JSON String As Text` unescapes a JSON string to text
+- Improved
+  - sort - now uses natural sort algorithm
+
 ## 1.5.0
 - New Feature `Macro Scripts`
   - Write text editor macros as scripts

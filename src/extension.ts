@@ -23,7 +23,8 @@ import {Modify, View, Application} from 'vscode-extension-common'
  * - escapes and unescapes
  * - hex/bin/dec
  * - wrap at designated length
- * - selection as single JSON string
+ * - constrain/transform selected text to certain chars.  Specify valid chars like a-z.  All other chars will be transformed to specified char.
+ * - live preview hovers or such on some transforms when only 1 line selected
  */
 
 interface LinkedDocument {
@@ -163,6 +164,23 @@ export function activate(context: vscode.ExtensionContext) {
     disposable = vscode.commands.registerCommand('dakara-transformer.linesAsJSON', () => {
         const textEditor = vscode.window.activeTextEditor;
         transforms.linesAsJSON(textEditor);
+    });
+    context.subscriptions.push(disposable);
+
+    disposable = vscode.commands.registerCommand('dakara-transformer.selectionAsJSON', () => {
+        const textEditor = vscode.window.activeTextEditor;
+        transforms.selectionAsJSON(textEditor);
+    });
+    context.subscriptions.push(disposable);
+
+    Application.registerCommand(context, 'dakara-transformer.JsonAsText', () => {
+        const textEditor = vscode.window.activeTextEditor;
+        transforms.jsonStringAsText(textEditor);
+    });
+
+    disposable = vscode.commands.registerCommand('dakara-transformer.escapes', () => {
+        const textEditor = vscode.window.activeTextEditor;
+        transforms.escapes(textEditor)
     });
     context.subscriptions.push(disposable);
 }
