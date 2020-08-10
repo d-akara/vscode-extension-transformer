@@ -3,8 +3,8 @@ import * as path from 'path'
 import * as vscode from 'vscode';
 import {Lines,Modify,Region,View} from 'vscode-extension-common'
 import * as MacroBuilder from './macros/MacroBuilder'
-import * as MacroRepository from './macros/MacroRepository'
 import * as md5 from 'md5'
+const split = require('split-string')
 
 const gutterDecorationType = vscode.window.createTextEditorDecorationType({
     rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed
@@ -30,10 +30,27 @@ export function sortLines(textEditor: vscode.TextEditor, ranges: Array<vscode.Ra
         Modify.sortLinesByColumn(textEditor, ranges);
     } 
 }
+
+export function randomizeLines(textEditor: vscode.TextEditor, range: vscode.Range) {
+    const lines = Lines.linesFromRange(textEditor.document, range);
+    const randomLines = lines.slice(0, lines.length)
+    const randomizedLines = randomize(randomLines)
+    Modify.replaceLines(textEditor, lines, randomizedLines)
+}
+
+function randomize(lines) {
+    for (let i = lines.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [lines[i], lines[j]] = [lines[j], lines[i]];
+    }
+    return lines;
+}
+
 export function sortLinesByLength(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
     const linesToSort = linesFromRangesExpandBlockIfEmpty(textEditor, ranges);
     Modify.sortLinesByLength(textEditor, linesToSort);
 }
+
 export function trimLines(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
     let trimmedResult = "";
     const trimLinesB = Lines.linesFromRange(textEditor.document, ranges[0])
@@ -67,6 +84,26 @@ export function uniqueLinesToNewDocument(textEditor: vscode.TextEditor, ranges: 
     const uniqueLines = uniqueMap.values()
     const linesArray = Array.from(uniqueLines);
     View.openShowDocument(originName(textEditor), Lines.textFromLines(textEditor.document, linesArray));
+}
+export function countUniqueLinesToNewDocument(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
+    const lines = linesFromRangesExpandBlockIfEmpty(textEditor, ranges);
+    const duplicateNumbers = 0;
+    const countMap = new Map()
+    const uniqueMap = new Map()
+    lines.forEach(line => {
+        uniqueMap.set(line.text, line);
+        let count = countMap.get(line.text)
+        if(!count) count = 0
+        countMap.set(line.text,count + 1)
+    });
+    
+    const uniqueLines = uniqueMap.values()
+    const linesArray = Array.from(uniqueLines);
+    let displayText = "";
+    for(let line of linesArray) {
+        displayText += countMap.get(line.text) + " " + ":" + " " + line.text + "\n";
+    }
+    View.openShowDocument(originName(textEditor), displayText)
 }
 
 export function filterLines(textEditor: vscode.TextEditor, selection:vscode.Selection) {
@@ -240,16 +277,18 @@ export function alignToCursor(textEditor: vscode.TextEditor, ranges: Array<vscod
     })
 }
 
-export function alignCSV(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
+export async function alignCSV(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
+    const userInput = await vscode.window.showInputBox({prompt:'Specify Delimiter', value: ','});
+    const delimeter = JSON.parse(('\"' + userInput + '\"'));
     const lines = linesFromRangesExpandBlockIfEmpty(textEditor, ranges);
-    const linesParts = lines.map(line=>line.text.split(','));
+    const linesParts = lines.map(line=>split(line.text, {separator:delimeter, quotes:true}));
     const newLineTexts:string[] = []
     const linePartCount = linesParts[0].length;
     for (let columnIndex = 0; columnIndex < linePartCount; columnIndex++) {
         const max = maxLength(linesParts, 0);
         appendColumn(newLineTexts, linesParts, max);
         if (columnIndex != linePartCount - 1)
-            appendDelimeter(newLineTexts, ',');
+            appendDelimeter(newLineTexts, delimeter);
     }
 
     Modify.replaceLinesWithText(textEditor, lines, newLineTexts);
@@ -283,16 +322,19 @@ function maxLength(texts:string[][], partIndex:number) {
     })
 }
 
-export function compactCSV(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
+export async function compactCSV(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
+    const userInput = await vscode.window.showInputBox({prompt:'Specify Delimiter', value: ','});
+
+    const delimeter = JSON.parse(('\"' + userInput + '\"'));
     const lines = linesFromRangesExpandBlockIfEmpty(textEditor, ranges);
-    const linesParts = lines.map(line=>line.text.split(','));
+    const linesParts = lines.map(line=>split(line.text, {separator:delimeter, quotes:true}));
     const newLineTexts:string[] = []
     const linePartCount = linesParts[0].length;
     for (let columnIndex = 0; columnIndex < linePartCount; columnIndex++) {
         const max = maxLength(linesParts, 0);
         compactColumn(newLineTexts, linesParts, max);
         if (columnIndex != linePartCount - 1)
-            appendDelimeter(newLineTexts, ',');
+            appendDelimeter(newLineTexts, delimeter);
     }
 
     Modify.replaceLinesWithText(textEditor, lines, newLineTexts);
@@ -348,7 +390,7 @@ export function escapes(textEditor: vscode.TextEditor) {
     const decodeUrlSegment    = View.makeOption({label: 'Decode URL Segment', description: 'decode using decodeURIComponent()'})
     const encodeFormUrl       = View.makeOption({label: 'Encode x-www-form-urlencoded,', description: `form url encoding with spaces as '+'`})
     const decodeFormUrl       = View.makeOption({label: 'Decode x-www-form-urlencoded,', description: `form url decoding with spaces as '+'`})
-    const encodeMD5           = View.makeOption({label: 'Encode MD5',    description: 'encode as MD5'})
+    const encodeMD5           = View.makeOption({label: 'Hash MD5',    description: 'calculate MD5 Hash'})
 
     View.promptOptions([
         encodeBase64,

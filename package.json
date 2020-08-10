@@ -2,7 +2,7 @@
     "name": "transformer",
     "displayName": "Transformer",
     "description": "Filter, Sort, Unique, Reverse, Align, CSV, Line Selection, Text Transformations and Macros",
-    "version": "1.6.0",
+    "version": "1.8.0",
     "icon": "transformer-icon.png",
     "repository": {
         "type": "git",
@@ -22,6 +22,7 @@
         "onCommand:dakara-transformer.commands",
         "onCommand:dakara-transformer.compactCSV",
         "onCommand:dakara-transformer.copyToNewDocument",
+        "onCommand:dakara-transformer.countUniqueLinesNewDocument",
         "onCommand:dakara-transformer.filter",
         "onCommand:dakara-transformer.filterAsNewDocument",
         "onCommand:dakara-transformer.macroCreate",
@@ -37,9 +38,11 @@
         "onCommand:dakara-transformer.sortLines",
         "onCommand:dakara-transformer.uniqueLines",
         "onCommand:dakara-transformer.uniqueLinesNewDocument",
+        "onCommand:dakara-transformer.countUniqueLinesNewDocument",
         "onCommand:dakara-transformer.sortByLineLength",
         "onCommand:dakara-transformer.trimLines",
-        "onCommand:dakara-transformer.escapes"
+        "onCommand:dakara-transformer.escapes",
+        "onCommand:dakara-transformer.randomLines"
     ],
     "main": "./out/extension",
     "contributes": {
@@ -130,6 +133,11 @@
                 "category": "Transform"
             },
             {
+                "command": "dakara-transformer.countUniqueLinesNewDocument",
+                "title": "Count Duplicate Lines As New Document",
+                "category": "Transform"
+            },
+            {
                 "command": "dakara-transformer.copyToNewDocument",
                 "title": "Copy To New Document",
                 "category": "Transform"
@@ -162,6 +170,11 @@
             {
                 "command": "dakara-transformer.escapes",
                 "title": "Encode / Decode ...",
+                "category": "Transform"
+            },
+            {
+                "command": "dakara-transformer.randomLines",
+                "title": "Randomize Lines",
                 "category": "Transform"
             }
         ],
@@ -207,6 +220,7 @@
     },
     "dependencies": {
         "md5": "2.3.0",
+        "split-string": "6.1.0",
         "vscode-extension-common": "file:../vscode-extension-common"
     }
 }
