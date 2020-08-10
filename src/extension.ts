@@ -5,10 +5,7 @@ import {Modify, View, Application} from 'vscode-extension-common'
 /**
  * TODO - planned features:
  * - unique selections as new document
- * - unique words as new document
  * - filter sections based on text found in levels to the right
- * - count unique lines to new document, duplicates
- * - trim lines
  * - trim identical parts of lines
  * - sort folding regions / sort sections as determined by each cursor location
  * - split/join lines using token or expression
@@ -19,9 +16,6 @@ import {Modify, View, Application} from 'vscode-extension-common'
  *  - remove selections containing...
  *  - all lines with same level
  *  - expand selection that can work with multiple cursors
- * - scrapbook transformations
- * - escapes and unescapes
- * - hex/bin/dec
  * - wrap at designated length
  * - constrain/transform selected text to certain chars.  Specify valid chars like a-z.  All other chars will be transformed to specified char.
  * - live preview hovers or such on some transforms when only 1 line selected
@@ -62,6 +56,13 @@ export function activate(context: vscode.ExtensionContext) {
         transforms.uniqueLinesToNewDocument(textEditor, selections);
     });
     context.subscriptions.push(disposable);
+    
+    disposable = vscode.commands.registerCommand('dakara-transformer.countUniqueLinesNewDocument', () => {
+        const textEditor = vscode.window.activeTextEditor;
+        const selections = textEditor.selections;
+        transforms.countUniqueLinesToNewDocument(textEditor, selections);
+    });
+    context.subscriptions.push(disposable);
 
     disposable = vscode.commands.registerCommand('dakara-transformer.sortByLineLength', () => {
         const textEditor = vscode.window.activeTextEditor;
@@ -74,6 +75,13 @@ export function activate(context: vscode.ExtensionContext) {
         const textEditor = vscode.window.activeTextEditor;
         const selections = textEditor.selections;
         transforms.trimLines(textEditor, selections);
+    });
+    context.subscriptions.push(disposable)
+
+    disposable = vscode.commands.registerCommand('dakara-transformer.randomLines', () => {
+        const textEditor = vscode.window.activeTextEditor;
+        const selection = textEditor.selection;
+        transforms.randomizeLines(textEditor, selection);
     });
     context.subscriptions.push(disposable)
     
