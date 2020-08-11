@@ -16,9 +16,11 @@ import {Modify, View, Application} from 'vscode-extension-common'
  *  - remove selections containing...
  *  - all lines with same level
  *  - expand selection that can work with multiple cursors
+ *  - select all highlighted (there is a vscode keybinding, but no command in palette)
  * - wrap at designated length
  * - constrain/transform selected text to certain chars.  Specify valid chars like a-z.  All other chars will be transformed to specified char.
  * - live preview hovers or such on some transforms when only 1 line selected
+ * - filter lines as new document with line numbers of original as text in document
  */
 
 interface LinkedDocument {
@@ -169,6 +171,10 @@ export function activate(context: vscode.ExtensionContext) {
     });
     context.subscriptions.push(disposable);
 
+    Application.registerCommand(context, 'dakara-transformer.selectHighlights', () => {
+        transforms.selectHighlights();
+    });
+
     disposable = vscode.commands.registerCommand('dakara-transformer.linesAsJSON', () => {
         const textEditor = vscode.window.activeTextEditor;
         transforms.linesAsJSON(textEditor);
@@ -191,6 +197,18 @@ export function activate(context: vscode.ExtensionContext) {
         transforms.escapes(textEditor)
     });
     context.subscriptions.push(disposable);
+
+    Application.registerCommand(context, 'dakara-transformer.joinLines', () => {
+        const textEditor = vscode.window.activeTextEditor;
+        transforms.joinLines(textEditor);
+    });
+
+    Application.registerCommand(context, 'dakara-transformer.splitLines', () => {
+        const textEditor = vscode.window.activeTextEditor;
+        transforms.splitLines(textEditor);
+    });
+
+
 }
 
 export function deactivate() {

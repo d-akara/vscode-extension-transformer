@@ -9,8 +9,13 @@
     - Decode x-www-form-urlencoded
     - Hash MD5
   - `JSON String As Text` unescapes a JSON string to text
+  - `Selection As JSON String` escape selection to single JSON string
+  - `Split Lines` split lines using specified delimeter
+  - `Join Lines` join lines using specified delimeter
+  - `Select Highlights` make selections of all text highlighted in the editor
 - Improved
   - sort - now uses natural sort algorithm
+
 ## 1.7.0
 - Added `Randomize Lines`
 - Added `Selection As JSON String`
