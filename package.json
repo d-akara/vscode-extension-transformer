@@ -17,32 +17,34 @@
     ],
     "activationEvents": [
         "onCommand:dakara-internal.oncommand",
+        "onCommand:dakara-transformer.JsonAsText",
         "onCommand:dakara-transformer.alignCSV",
         "onCommand:dakara-transformer.alignCursor",
         "onCommand:dakara-transformer.commands",
         "onCommand:dakara-transformer.compactCSV",
         "onCommand:dakara-transformer.copyToNewDocument",
         "onCommand:dakara-transformer.countUniqueLinesNewDocument",
+        "onCommand:dakara-transformer.escapes",
         "onCommand:dakara-transformer.filter",
         "onCommand:dakara-transformer.filterAsNewDocument",
+        "onCommand:dakara-transformer.joinLines",
+        "onCommand:dakara-transformer.linesAsJSON",
         "onCommand:dakara-transformer.macroCreate",
-        "onCommand:dakara-transformer.macroEdit",
         "onCommand:dakara-transformer.macroDelete",
+        "onCommand:dakara-transformer.macroEdit",
         "onCommand:dakara-transformer.macroRepeat",
         "onCommand:dakara-transformer.macroRun",
-        "onCommand:dakara-transformer.linesAsJSON",
-        "onCommand:dakara-transformer.selectionAsJSON",
-        "onCommand:dakara-transformer.JsonAsText",
+        "onCommand:dakara-transformer.randomLines",
         "onCommand:dakara-transformer.reverseLines",
+        "onCommand:dakara-transformer.selectHighlights",
         "onCommand:dakara-transformer.selectLines",
-        "onCommand:dakara-transformer.sortLines",
-        "onCommand:dakara-transformer.uniqueLines",
-        "onCommand:dakara-transformer.uniqueLinesNewDocument",
-        "onCommand:dakara-transformer.countUniqueLinesNewDocument",
+        "onCommand:dakara-transformer.selectionAsJSON",
         "onCommand:dakara-transformer.sortByLineLength",
+        "onCommand:dakara-transformer.sortLines",
+        "onCommand:dakara-transformer.splitLines",
         "onCommand:dakara-transformer.trimLines",
-        "onCommand:dakara-transformer.escapes",
-        "onCommand:dakara-transformer.randomLines"
+        "onCommand:dakara-transformer.uniqueLines",
+        "onCommand:dakara-transformer.uniqueLinesNewDocument"
     ],
     "main": "./out/extension",
     "contributes": {
@@ -144,7 +146,12 @@
             },
             {
                 "command": "dakara-transformer.selectLines",
-                "title": "Select Lines",
+                "title": "Select Full Lines (of all current selections)",
+                "category": "Transform"
+            },
+            {
+                "command": "dakara-transformer.selectHighlights",
+                "title": "Select Highlights (make selections of all highlighted text)",
                 "category": "Transform"
             },
             {
@@ -175,6 +182,16 @@
             {
                 "command": "dakara-transformer.randomLines",
                 "title": "Randomize Lines",
+                "category": "Transform"
+            },
+            {
+                "command": "dakara-transformer.joinLines",
+                "title": "Join Lines...",
+                "category": "Transform"
+            },
+            {
+                "command": "dakara-transformer.splitLines",
+                "title": "Split Lines...",
                 "category": "Transform"
             }
         ],

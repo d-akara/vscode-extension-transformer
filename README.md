@@ -49,6 +49,10 @@
 - Operates on selection or entire document if no selection
 - Filter using regex or literal
 - Add lines relative to filtered lines by count and regular expression match
+- `Parent Levels` add context by indentation level.  Similar to vscode folding levels. 
+  - Examples:
+    - `0` will include all siblings of the matched lines.  Where a sibling is determined by being at the same indentation level next to the matched line.
+    - `1` will include all siblings + the parent siblings ( one less indentation level )
 
 ![ScreenShot](/readme-images/filter-new-document.gif)
 

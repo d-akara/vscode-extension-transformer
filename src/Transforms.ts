@@ -358,13 +358,17 @@ export function copyToNewDocument(textEditor: vscode.TextEditor) {
 }
 
 export function selectLines(textEditor: vscode.TextEditor) {
-    Region.selectionsOrMatchesAsSelectionsOrDocument(textEditor)
+    Region.matchesAsSelectionsOrSelections(textEditor)
         .then(selections=> {
             textEditor.selections = selections.map(selection=> {
                 const range = Region.expandRangeFullLineWidth(textEditor.document, selection)
                 return new vscode.Selection(range.start, range.end);
             })
         });
+}
+
+export async function selectHighlights() {
+    await vscode.commands.executeCommand('editor.action.selectHighlights');
 }
 
 export function linesAsJSON(textEditor: vscode.TextEditor) {
@@ -379,6 +383,18 @@ export function selectionAsJSON(textEditor: vscode.TextEditor) {
 
 export function jsonStringAsText(textEditor: vscode.TextEditor) {
     Modify.replaceUsingTransform(textEditor, textEditor.selections, text => JSON.parse(text))
+}
+
+export async function joinLines(textEditor: vscode.TextEditor) {
+    const userInput = await vscode.window.showInputBox({prompt:'Specify Delimiter', value: ''});
+    const splitChar = Lines.lineEndChars(textEditor)
+    Modify.replaceUsingTransform(textEditor, textEditor.selections, text => text.split(splitChar).join(userInput))
+}
+
+export async function splitLines(textEditor: vscode.TextEditor) {
+    const userInput = await vscode.window.showInputBox({prompt:'Specify Delimiter', value: ''});
+    const splitChar = Lines.lineEndChars(textEditor)
+    Modify.replaceUsingTransform(textEditor, textEditor.selections, text => text.split(userInput).join(splitChar))
 }
 
 export function escapes(textEditor: vscode.TextEditor) {
