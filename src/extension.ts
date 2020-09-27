@@ -208,6 +208,16 @@ export function activate(context: vscode.ExtensionContext) {
         transforms.splitLines(textEditor);
     });
 
+    Application.registerCommand(context, 'dakara-transformer.splitLinesBeforeDelimiter', () => {
+        const textEditor = vscode.window.activeTextEditor;
+        transforms.splitLinesBeforeDelimiter(textEditor);
+    });
+
+    Application.registerCommand(context, 'dakara-transformer.splitLinesAfterDelimiter', () => {
+        const textEditor = vscode.window.activeTextEditor;
+        transforms.splitLinesAfterDelimiter(textEditor);
+    });
+
 
 }
 
