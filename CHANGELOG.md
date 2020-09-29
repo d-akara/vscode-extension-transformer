@@ -1,3 +1,8 @@
+## 1.9.0
+- New Features
+  - `Split Lines After...` splits lines after the delimeter while keeping the delimeter
+  - `Split Lines Before...` splits lines before the delimeter while keeping the delimeter
+
 ## 1.8.0
 - New Features
   - `Encode / Decode ...`
