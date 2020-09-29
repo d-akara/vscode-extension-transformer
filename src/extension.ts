@@ -21,6 +21,11 @@ import {Modify, View, Application} from 'vscode-extension-common'
  * - constrain/transform selected text to certain chars.  Specify valid chars like a-z.  All other chars will be transformed to specified char.
  * - live preview hovers or such on some transforms when only 1 line selected
  * - filter lines as new document with line numbers of original as text in document
+ * - https://stackoverflow.com/questions/990904/remove-accents-diacritics-in-a-string-in-javascript
+ * - JSON Where - https://www.npmjs.com/package/json-where
+ *   - popup how to use from quick pick button
+ * - XPath filtering using - https://github.com/FontoXML/fontoxpath
+ * - constrain - limit all chars within a regex, all chars outside substituted with specified chars. also limit to lower case or uppercase.  possibly combine with remove accents.
  */
 
 interface LinkedDocument {
