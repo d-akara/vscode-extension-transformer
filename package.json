@@ -2,7 +2,7 @@
     "name": "transformer",
     "displayName": "Transformer",
     "description": "Filter, Sort, Unique, Reverse, Align, CSV, Line Selection, Text Transformations and Macros",
-    "version": "1.8.0",
+    "version": "1.9.0",
     "icon": "transformer-icon.png",
     "repository": {
         "type": "git",
@@ -42,6 +42,8 @@
         "onCommand:dakara-transformer.sortByLineLength",
         "onCommand:dakara-transformer.sortLines",
         "onCommand:dakara-transformer.splitLines",
+        "onCommand:dakara-transformer.splitLinesBeforeDelimiter",
+        "onCommand:dakara-transformer.splitLinesAfterDelimiter",
         "onCommand:dakara-transformer.trimLines",
         "onCommand:dakara-transformer.uniqueLines",
         "onCommand:dakara-transformer.uniqueLinesNewDocument"
@@ -192,6 +194,16 @@
             {
                 "command": "dakara-transformer.splitLines",
                 "title": "Split Lines...",
+                "category": "Transform"
+            },
+            {
+                "command": "dakara-transformer.splitLinesBeforeDelimiter",
+                "title": "Split Lines Before...",
+                "category": "Transform"
+            },
+            {
+                "command": "dakara-transformer.splitLinesAfterDelimiter",
+                "title": "Split Lines After...",
                 "category": "Transform"
             }
         ],
