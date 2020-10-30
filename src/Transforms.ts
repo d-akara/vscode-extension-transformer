@@ -397,6 +397,18 @@ export async function splitLines(textEditor: vscode.TextEditor) {
     Modify.replaceUsingTransform(textEditor, textEditor.selections, text => text.split(userInput).join(splitChar))
 }
 
+export async function splitLinesBeforeDelimiter(textEditor: vscode.TextEditor) {
+    const userInput = await vscode.window.showInputBox({prompt:'Specify Delimiter', value: ''});
+    const splitChar = Lines.lineEndChars(textEditor) + userInput
+    Modify.replaceUsingTransform(textEditor, textEditor.selections, text => text.split(userInput).join(splitChar))
+}
+
+export async function splitLinesAfterDelimiter(textEditor: vscode.TextEditor) {
+    const userInput = await vscode.window.showInputBox({prompt:'Specify Delimiter', value: ''});
+    const splitChar =  userInput + Lines.lineEndChars(textEditor)
+    Modify.replaceUsingTransform(textEditor, textEditor.selections, text => text.split(userInput).join(splitChar))
+}
+
 export function escapes(textEditor: vscode.TextEditor) {
     const selections = textEditor.selections
 

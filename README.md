@@ -22,6 +22,15 @@
 * [Trim Lines](#trim-lines)
 * [Randomize Lines](#randomize-lines)
 * [Count Duplicate Lines As New Document](#count-duplicate-lines-as-new-document)
+* [Encode / Decode](#encode-/-decode)
+* [JSON String As Text](#json-string-as-text)
+* [Selection As JSON String](#selection-as-json-string)
+* [Split Lines](#split-lines)
+* [Split Lines After](#split-lines)
+* [Split Lines Before](#split-lines)
+* [Join Lines](#split-lines)
+* [Select Highlights](#select-highlights)
+
 * [Macros](#macros)
 
 ### Unique Lines
@@ -106,6 +115,36 @@
 
 ### Count Duplicate Lines As New Document
 - Count the number of instances of each unique line
+
+### Encode / Decode
+- Encode Base64
+- Decode Base64
+- Encode URL Segment
+- Decode URL Segment
+- Encode x-www-form-urlencoded
+- Decode x-www-form-urlencoded
+- Hash MD5
+
+### JSON String As Text
+- unescapes a JSON string to text
+
+### Selection As JSON String
+- escape selection to single JSON string
+
+### Split Lines
+- split lines using specified delimeter
+
+### Split Lines After 
+- splits lines after the delimeter while keeping the delimeter
+
+### Split Lines Before
+- splits lines before the delimeter while keeping the delimeter
+
+### Join Lines
+- join lines using specified delimeter
+
+### Select Highlights
+- make selections of all text highlighted in the editor
 
 ### Macros
 - [Experimental feature to provide text editor macros as scripts](https://github.com/dakaraphi/vscode-extension-transformer/issues/13)
