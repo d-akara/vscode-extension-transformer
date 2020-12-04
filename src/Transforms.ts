@@ -31,6 +31,10 @@ export function sortLines(textEditor: vscode.TextEditor, ranges: Array<vscode.Ra
     } 
 }
 
+export function sortSelections(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
+    Modify.sortRanges(textEditor, ranges);
+}
+
 export function randomizeLines(textEditor: vscode.TextEditor, range: vscode.Range) {
     const lines = Lines.linesFromRange(textEditor.document, range);
     const randomLines = lines.slice(0, lines.length)
@@ -38,12 +42,23 @@ export function randomizeLines(textEditor: vscode.TextEditor, range: vscode.Rang
     Modify.replaceLines(textEditor, lines, randomizedLines)
 }
 
-function randomize(lines) {
-    for (let i = lines.length - 1; i > 0; i--) {
+export function randomizeSelections(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
+    const randomizedRanges = randomize([...ranges])
+    Modify.replaceRanges(textEditor, ranges, randomizedRanges)
+}
+
+function randomize(items: Array<any>) {
+    for (let i = items.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [lines[i], lines[j]] = [lines[j], lines[i]];
+        [items[i], items[j]] = [items[j], items[i]];
     }
-    return lines;
+    return items;
+}
+
+export function reverseSelections(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
+    const orderedRanges = Region.makeOrderedRangesByStartPosition(ranges)
+    const reversedRanges = [...orderedRanges].reverse()
+    Modify.replaceRanges(textEditor, orderedRanges, reversedRanges)
 }
 
 export function sortLinesByLength(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
@@ -55,10 +70,19 @@ export function trimLines(textEditor: vscode.TextEditor, ranges: Array<vscode.Ra
     let trimmedResult = "";
     const trimLinesB = Lines.linesFromRange(textEditor.document, ranges[0])
    for(const line of trimLinesB) {
-       trimmedResult += line.text.trim() + '\n'
+       trimmedResult += line.text.trim() + Lines.lineEndChars(textEditor)
    }
    Modify.replace(textEditor,ranges[0],trimmedResult)
 }
+
+export function trimSelections(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
+    let trimmedResult = [];
+    for(const range of ranges) {
+       trimmedResult.push(textEditor.document.getText(range).trim())
+    }
+    Modify.replaceRangesWithText(textEditor, ranges, trimmedResult)
+}
+
 export function uniqueLines(textEditor: vscode.TextEditor, ranges: Array<vscode.Range>) {
     if(ranges.length === 1) {
         const rangeBlock = Region.expandRangeToBlockIfEmpty(textEditor, ranges[0]);

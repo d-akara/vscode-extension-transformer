@@ -2,7 +2,7 @@
     "name": "transformer",
     "displayName": "Transformer",
     "description": "Filter, Sort, Unique, Reverse, Align, CSV, Line Selection, Text Transformations and Macros",
-    "version": "1.9.0",
+    "version": "1.10.0",
     "icon": "transformer-icon.png",
     "repository": {
         "type": "git",
@@ -35,16 +35,20 @@
         "onCommand:dakara-transformer.macroRepeat",
         "onCommand:dakara-transformer.macroRun",
         "onCommand:dakara-transformer.randomLines",
+        "onCommand:dakara-transformer.randomSelections",
         "onCommand:dakara-transformer.reverseLines",
+        "onCommand:dakara-transformer.reverseSelections",
         "onCommand:dakara-transformer.selectHighlights",
         "onCommand:dakara-transformer.selectLines",
         "onCommand:dakara-transformer.selectionAsJSON",
         "onCommand:dakara-transformer.sortByLineLength",
         "onCommand:dakara-transformer.sortLines",
+        "onCommand:dakara-transformer.sortSelections",
         "onCommand:dakara-transformer.splitLines",
         "onCommand:dakara-transformer.splitLinesBeforeDelimiter",
         "onCommand:dakara-transformer.splitLinesAfterDelimiter",
         "onCommand:dakara-transformer.trimLines",
+        "onCommand:dakara-transformer.trimSelections",
         "onCommand:dakara-transformer.uniqueLines",
         "onCommand:dakara-transformer.uniqueLinesNewDocument"
     ],
@@ -54,6 +58,11 @@
             {
                 "command": "dakara-transformer.sortLines",
                 "title": "Sort Lines",
+                "category": "Transform"
+            },
+            {
+                "command": "dakara-transformer.sortSelections",
+                "title": "Sort Selections",
                 "category": "Transform"
             },
             {
@@ -99,6 +108,11 @@
             {
                 "command": "dakara-transformer.reverseLines",
                 "title": "Reverse Lines",
+                "category": "Transform"
+            },
+            {
+                "command": "dakara-transformer.reverseSelections",
+                "title": "Reverse Selections",
                 "category": "Transform"
             },
             {
@@ -177,6 +191,11 @@
                 "category": "Transform"
             },
             {
+                "command": "dakara-transformer.trimSelections",
+                "title": "Trim Selections",
+                "category": "Transform"
+            },
+            {
                 "command": "dakara-transformer.escapes",
                 "title": "Encode / Decode ...",
                 "category": "Transform"
@@ -184,6 +203,11 @@
             {
                 "command": "dakara-transformer.randomLines",
                 "title": "Randomize Lines",
+                "category": "Transform"
+            },
+            {
+                "command": "dakara-transformer.randomSelections",
+                "title": "Randomize Selections",
                 "category": "Transform"
             },
             {
