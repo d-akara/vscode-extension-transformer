@@ -41,12 +41,26 @@ export function activate(context: vscode.ExtensionContext) {
         const selections = textEditor.selections;
         transforms.sortLines(textEditor, selections);
     });
-
     context.subscriptions.push(disposable);
+
+    disposable = vscode.commands.registerCommand('dakara-transformer.sortSelections', () => {
+        const textEditor = vscode.window.activeTextEditor;
+        const selections = textEditor.selections;
+        transforms.sortSelections(textEditor, selections);
+    });
+    context.subscriptions.push(disposable);
+
     disposable = vscode.commands.registerCommand('dakara-transformer.reverseLines', () => {
         const textEditor = vscode.window.activeTextEditor;
         const selections = textEditor.selections;
         Modify.reverseLines(textEditor, selections);
+    });
+    context.subscriptions.push(disposable);
+
+    disposable = vscode.commands.registerCommand('dakara-transformer.reverseSelections', () => {
+        const textEditor = vscode.window.activeTextEditor;
+        const selections = textEditor.selections;
+        transforms.reverseSelections(textEditor, selections);
     });
     context.subscriptions.push(disposable);
 
@@ -85,10 +99,24 @@ export function activate(context: vscode.ExtensionContext) {
     });
     context.subscriptions.push(disposable)
 
+    disposable = vscode.commands.registerCommand('dakara-transformer.trimSelections', () => {
+        const textEditor = vscode.window.activeTextEditor;
+        const selections = textEditor.selections;
+        transforms.trimSelections(textEditor, selections);
+    });
+    context.subscriptions.push(disposable)
+
     disposable = vscode.commands.registerCommand('dakara-transformer.randomLines', () => {
         const textEditor = vscode.window.activeTextEditor;
         const selection = textEditor.selection;
         transforms.randomizeLines(textEditor, selection);
+    });
+    context.subscriptions.push(disposable)
+
+    disposable = vscode.commands.registerCommand('dakara-transformer.randomSelections', () => {
+        const textEditor = vscode.window.activeTextEditor;
+        const selections = textEditor.selections;
+        transforms.randomizeSelections(textEditor, selections);
     });
     context.subscriptions.push(disposable)
     

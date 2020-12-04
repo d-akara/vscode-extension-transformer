@@ -30,6 +30,10 @@
 * [Split Lines Before](#split-lines)
 * [Join Lines](#split-lines)
 * [Select Highlights](#select-highlights)
+* [Randomize Selections](#randomize-selections)
+* [Reverse Selections](#reverse-selections)
+* [Sort Selections](#sort-selections)
+* [Trim Selections](#trim-selections)
 
 * [Macros](#macros)
 
@@ -145,6 +149,15 @@
 
 ### Select Highlights
 - make selections of all text highlighted in the editor
+
+### Randomize Selections
+ - replace selections with random order of selected text
+### Reverse Selections
+ - replace selections with reverse order of selected text
+### Sort Selections
+ - replace selections with sorted order of selected text
+### Trim Selections
+ - replace selections with trimmed selected text
 
 ### Macros
 - [Experimental feature to provide text editor macros as scripts](https://github.com/dakaraphi/vscode-extension-transformer/issues/13)

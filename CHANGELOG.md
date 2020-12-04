@@ -1,3 +1,10 @@
+## 1.10.0
+- New Features
+  - `Randomize Selections` replace selections with random order of selected text
+  - `Reverse Selections` replace selections with reverse order of selected text
+  - `Sort Selections` replace selections with sorted order of selected text
+  - `Trim Selections` replace selections with trimmed selected text
+
 ## 1.9.0
 - New Features
   - `Split Lines After...` splits lines after the delimeter while keeping the delimeter
