@@ -1,3 +1,9 @@
+## 1.11.0
+- New Features
+  - `Normalize Diacritical Marks` transforms accented characters to non-accented versions
+  - `Rotate Forward Selections` rotates the order of the selections forward
+  - `Rotate Backward Selections` rotates the order of the selections backward
+
 ## 1.10.0
 - New Features
   - `Randomize Selections` replace selections with random order of selected text

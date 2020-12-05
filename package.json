@@ -2,7 +2,7 @@
     "name": "transformer",
     "displayName": "Transformer",
     "description": "Filter, Sort, Unique, Reverse, Align, CSV, Line Selection, Text Transformations and Macros",
-    "version": "1.10.0",
+    "version": "1.11.0",
     "icon": "transformer-icon.png",
     "repository": {
         "type": "git",
@@ -34,10 +34,13 @@
         "onCommand:dakara-transformer.macroEdit",
         "onCommand:dakara-transformer.macroRepeat",
         "onCommand:dakara-transformer.macroRun",
+        "onCommand:dakara-transformer.normalizeDiacriticalMarks",
         "onCommand:dakara-transformer.randomLines",
         "onCommand:dakara-transformer.randomSelections",
         "onCommand:dakara-transformer.reverseLines",
         "onCommand:dakara-transformer.reverseSelections",
+        "onCommand:dakara-transformer.rotateBackwardSelections",
+        "onCommand:dakara-transformer.rotateForwardSelections",
         "onCommand:dakara-transformer.selectHighlights",
         "onCommand:dakara-transformer.selectLines",
         "onCommand:dakara-transformer.selectionAsJSON",
@@ -228,6 +231,21 @@
             {
                 "command": "dakara-transformer.splitLinesAfterDelimiter",
                 "title": "Split Lines After...",
+                "category": "Transform"
+            },
+            {
+                "command": "dakara-transformer.rotateForwardSelections",
+                "title": "Rotate Forward Selections",
+                "category": "Transform"
+            },
+            {
+                "command": "dakara-transformer.rotateBackwardSelections",
+                "title": "Rotate Backward Selections",
+                "category": "Transform"
+            },
+            {
+                "command": "dakara-transformer.normalizeDiacriticalMarks",
+                "title": "Normalize Diacritical Marks (remove accents)",
                 "category": "Transform"
             }
         ],

@@ -34,6 +34,9 @@
 * [Reverse Selections](#reverse-selections)
 * [Sort Selections](#sort-selections)
 * [Trim Selections](#trim-selections)
+* [Rotate Forward Selections](#rotate-forward-selections)
+* [Rotate Backward Selections](#rotate-backward-selections)
+* [Normalize Diacritical Marks](#normalize-diacritical-marks)
 
 * [Macros](#macros)
 
@@ -158,6 +161,12 @@
  - replace selections with sorted order of selected text
 ### Trim Selections
  - replace selections with trimmed selected text
+### Rotate Forward Selections
+ - rotates the order of the selections forward
+### Rotate Backward Selections
+ - rotates the order of the selections backward
+### Normalize Diacritical Marks
+ - transforms accented characters to non-accented versions
 
 ### Macros
 - [Experimental feature to provide text editor macros as scripts](https://github.com/dakaraphi/vscode-extension-transformer/issues/13)
