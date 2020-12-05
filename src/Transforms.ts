@@ -433,6 +433,38 @@ export async function splitLinesAfterDelimiter(textEditor: vscode.TextEditor) {
     Modify.replaceUsingTransform(textEditor, textEditor.selections, text => text.split(userInput).join(splitChar))
 }
 
+export async function rotateForwardSelections(textEditor: vscode.TextEditor) {
+    const ranges = textEditor.selections
+    const orderedRanges = Region.makeOrderedRangesByStartPosition(ranges)
+    let shiftedRanges = [...orderedRanges]
+    shiftedRanges.unshift(shiftedRanges.pop())
+    Modify.replaceRanges(textEditor, orderedRanges, shiftedRanges)
+}
+
+export async function rotateBackwardSelections(textEditor: vscode.TextEditor) {
+    const ranges = textEditor.selections
+    const orderedRanges = Region.makeOrderedRangesByStartPosition(ranges)
+    let shiftedRanges = [...orderedRanges]
+    shiftedRanges.push(shiftedRanges.shift())
+    Modify.replaceRanges(textEditor, orderedRanges, shiftedRanges)
+}
+
+export async function normalizeDiacriticalMarks(textEditor: vscode.TextEditor) {
+    const ranges = textEditor.selections
+    const orderedRanges = Region.makeOrderedRangesByStartPosition(ranges)
+
+    const normalizedText = []
+    for (const range of orderedRanges) {
+        const text = normalizeDiacritical(textEditor.document.getText(range))
+        normalizedText.push(text)
+    }
+    Modify.replaceRangesWithText(textEditor, orderedRanges, normalizedText)
+}
+
+function normalizeDiacritical(text: String) {
+    return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+}
+
 export function escapes(textEditor: vscode.TextEditor) {
     const selections = textEditor.selections
 

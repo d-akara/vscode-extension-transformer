@@ -251,6 +251,21 @@ export function activate(context: vscode.ExtensionContext) {
         transforms.splitLinesAfterDelimiter(textEditor);
     });
 
+    Application.registerCommand(context, 'dakara-transformer.rotateForwardSelections', () => {
+        const textEditor = vscode.window.activeTextEditor;
+        transforms.rotateForwardSelections(textEditor);
+    });
+
+    Application.registerCommand(context, 'dakara-transformer.rotateBackwardSelections', () => {
+        const textEditor = vscode.window.activeTextEditor;
+        transforms.rotateBackwardSelections(textEditor);
+    });
+
+    Application.registerCommand(context, 'dakara-transformer.normalizeDiacriticalMarks', () => {
+        const textEditor = vscode.window.activeTextEditor;
+        transforms.normalizeDiacriticalMarks(textEditor);
+    });
+
 
 }
 
