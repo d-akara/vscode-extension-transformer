@@ -1,8 +1,8 @@
 {
     "name": "transformer",
     "displayName": "Transformer",
-    "description": "Filter, Sort, Unique, Reverse, Align, CSV, Line Selection, Text Transformations and Macros",
-    "version": "1.11.0",
+    "description": "Filter, Sort, Unique, Reverse, Align, CSV, Line Selection and more text Transformations",
+    "version": "1.11.1",
     "icon": "transformer-icon.png",
     "repository": {
         "type": "git",
@@ -71,31 +71,6 @@
             {
                 "command": "dakara-transformer.filterAsNewDocument",
                 "title": "Filter Lines As New Document...",
-                "category": "Transform"
-            },
-            {
-                "command": "dakara-transformer.macroRun",
-                "title": "Macro Script Run...",
-                "category": "Transform"
-            },
-            {
-                "command": "dakara-transformer.macroEdit",
-                "title": "Macro Script Edit...",
-                "category": "Transform"
-            },
-            {
-                "command": "dakara-transformer.macroCreate",
-                "title": "Macro Script Create...",
-                "category": "Transform"
-            },
-            {
-                "command": "dakara-transformer.macroDelete",
-                "title": "Macro Script Delete...",
-                "category": "Transform"
-            },
-            {
-                "command": "dakara-transformer.macroRepeat",
-                "title": "Macro Script Repeat Last",
                 "category": "Transform"
             },
             {

@@ -1,3 +1,9 @@
+## 1.11.1
+- Fixed
+  - `Sort Lines By Length` regression introduced in 1.8.0 broke this command.
+  - `Filter lines as new document` fixed issue with adding surrounding lines
+  - Removed experimental macros
+  
 ## 1.11.0
 - New Features
   - `Normalize Diacritical Marks` transforms accented characters to non-accented versions

@@ -218,7 +218,7 @@ export function filterLinesWithContextToNewDocument(textEditor: vscode.TextEdito
                 .reduce((prevLines, currLines) => prevLines.concat(currLines))
                 .sort((l1,l2)=>l1.lineNumber-l2.lineNumber)
                 .reduce((a,b)=>{ // remove duplicates
-                    if (a.indexOf(b) < 0) a.push(b)
+                    if (!a.find(a => a.lineNumber === b.lineNumber)) a.push(b)
                     return a
                 },[] as vscode.TextLine[])
         }
