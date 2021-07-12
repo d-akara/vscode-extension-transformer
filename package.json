@@ -10,7 +10,7 @@
     },
     "publisher": "dakara",
     "engines": {
-        "vscode": "^1.47.0"
+        "vscode": "^1.58.0"
     },
     "categories": [
         "Other"
