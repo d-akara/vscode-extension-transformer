@@ -1,3 +1,7 @@
+## 1.11.2
+- Fixed
+  - Command not found errors due to incompatibility introduced in vscode 1.58
+  
 ## 1.11.1
 - Fixed
   - `Sort Lines By Length` regression introduced in 1.8.0 broke this command.

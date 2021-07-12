@@ -134,32 +134,7 @@ export function activate(context: vscode.ExtensionContext) {
     });
     context.subscriptions.push(disposable);
 
-    disposable = vscode.commands.registerCommand('dakara-transformer.macroRepeat', () => {
-        transforms.macroRepeatLast()
-    });
-    context.subscriptions.push(disposable);
-
-    disposable = vscode.commands.registerCommand('dakara-transformer.macroCreate', () => {
-        transforms.macroCreate()
-    });
-    context.subscriptions.push(disposable);
-
-    disposable = vscode.commands.registerCommand('dakara-transformer.macroDelete', () => {
-        transforms.macroDelete()
-    });
-    context.subscriptions.push(disposable);
-
-    disposable = vscode.commands.registerCommand('dakara-transformer.macroRun', () => {
-        transforms.macroRun()
-    });
-    context.subscriptions.push(disposable);
-
-    disposable = vscode.commands.registerCommand('dakara-transformer.macroEdit', () => {
-        transforms.macroEdit()
-    });
-    context.subscriptions.push(disposable);
-
-    disposable = vscode.commands.registerCommand('dakara-internal.oncommand', onCommand => onCommand());
+    disposable = vscode.commands.registerCommand('dakara-internal.command', onCommand => onCommand());
     context.subscriptions.push(disposable);
 
     disposable = vscode.commands.registerCommand('dakara-transformer.alignCursor', () => {
