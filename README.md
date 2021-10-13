@@ -86,7 +86,7 @@
 - Aligns text right of cursor to cursor position
 - Single cursor will auto expand vertically to block
 
-![ScreenShot](/readme-images/align-to-cursor.png)
+![ScreenShot](/readme-images/Align-to-cursor.png)
 
 ### Align CSV
 - Aligns CSV text into columns.  Can also specify custom delimiter.

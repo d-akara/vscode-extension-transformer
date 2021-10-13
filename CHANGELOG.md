@@ -1,3 +1,16 @@
+## 1.12.0
+- New Features
+  - Perform operation on entire line of cursor when there is no selection for convenience
+    - Applies to the following commands:
+    - `Split Lines`
+    - `Split Lines After...` 
+    - `Split Lines Before...`
+    - `JSON String As Text`
+    - `Selection As JSON String`
+    - `Encode / Decode ...`
+- Fixed
+  - README missing image
+
 ## 1.11.2
 - Fixed
   - Command not found errors due to incompatibility introduced in vscode 1.58

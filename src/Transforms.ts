@@ -402,11 +402,13 @@ export function linesAsJSON(textEditor: vscode.TextEditor) {
 }
 
 export function selectionAsJSON(textEditor: vscode.TextEditor) {
-    Modify.replaceUsingTransform(textEditor, textEditor.selections, text => JSON.stringify(text))
+    const expandedSelections = Region.expandRangesToLineIfEmpty(textEditor.document, textEditor.selections)
+    Modify.replaceUsingTransform(textEditor, expandedSelections, text => JSON.stringify(text))
 }
 
 export function jsonStringAsText(textEditor: vscode.TextEditor) {
-    Modify.replaceUsingTransform(textEditor, textEditor.selections, text => JSON.parse(text))
+    const expandedSelections = Region.expandRangesToLineIfEmpty(textEditor.document, textEditor.selections)
+    Modify.replaceUsingTransform(textEditor, expandedSelections, text => JSON.parse(text))
 }
 
 export async function joinLines(textEditor: vscode.TextEditor) {
@@ -418,19 +420,22 @@ export async function joinLines(textEditor: vscode.TextEditor) {
 export async function splitLines(textEditor: vscode.TextEditor) {
     const userInput = await vscode.window.showInputBox({prompt:'Specify Delimiter', value: ''});
     const splitChar = Lines.lineEndChars(textEditor)
-    Modify.replaceUsingTransform(textEditor, textEditor.selections, text => text.split(userInput).join(splitChar))
+    const expandedSelections = Region.expandRangesToLineIfEmpty(textEditor.document, textEditor.selections)
+    Modify.replaceUsingTransform(textEditor, expandedSelections, text => text.split(userInput).join(splitChar))
 }
 
 export async function splitLinesBeforeDelimiter(textEditor: vscode.TextEditor) {
     const userInput = await vscode.window.showInputBox({prompt:'Specify Delimiter', value: ''});
     const splitChar = Lines.lineEndChars(textEditor) + userInput
-    Modify.replaceUsingTransform(textEditor, textEditor.selections, text => text.split(userInput).join(splitChar))
+    const expandedSelections = Region.expandRangesToLineIfEmpty(textEditor.document, textEditor.selections)
+    Modify.replaceUsingTransform(textEditor, expandedSelections, text => text.split(userInput).join(splitChar))
 }
 
 export async function splitLinesAfterDelimiter(textEditor: vscode.TextEditor) {
     const userInput = await vscode.window.showInputBox({prompt:'Specify Delimiter', value: ''});
     const splitChar =  userInput + Lines.lineEndChars(textEditor)
-    Modify.replaceUsingTransform(textEditor, textEditor.selections, text => text.split(userInput).join(splitChar))
+    const expandedSelections = Region.expandRangesToLineIfEmpty(textEditor.document, textEditor.selections)
+    Modify.replaceUsingTransform(textEditor, expandedSelections, text => text.split(userInput).join(splitChar))
 }
 
 export async function rotateForwardSelections(textEditor: vscode.TextEditor) {
@@ -466,7 +471,7 @@ function normalizeDiacritical(text: String) {
 }
 
 export function escapes(textEditor: vscode.TextEditor) {
-    const selections = textEditor.selections
+    const selections = Region.expandRangesToLineIfEmpty(textEditor.document, textEditor.selections)
 
     const encodeBase64        = View.makeOption({label: 'Encode Base64', description: 'encode as base64'})
     const decodeBase64        = View.makeOption({label: 'Decode Base64', description: 'decode from base64'})
