@@ -10,9 +10,11 @@ const gutterDecorationType = vscode.window.createTextEditorDecorationType({
     rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed
 });
 
+let transformInstance = 0;
 function originName(textEditor: vscode.TextEditor) {
     const filename = textEditor.document.fileName
-    return 'transform-' + path.basename(filename)
+    transformInstance++;
+    return 'transform-'+ transformInstance + '-' + path.basename(filename)
 }
 
 function linesFromRangesExpandBlockIfEmpty(textEditor: vscode.TextEditor,ranges: Array<vscode.Range>) {
@@ -149,10 +151,12 @@ export function filterLinesToNewDocument(textEditor: vscode.TextEditor, selectio
     // If we have multiple lines selected, use that as source to filter, else the entire document
     const range = selection.isSingleLine ? Region.makeRangeDocument(textEditor.document) : selection;
 
+    const editorName = originName(textEditor)
+
     return View.promptForFilterExpression(selectedText)
         .then(fnFilter => {
             const filteredLines = Lines.filterLines(textEditor.document, range, fnFilter);
-            return openShowDocumentWithLines(textEditor, filteredLines)
+            return openShowDocumentWithLines(editorName, filteredLines)
         })
 }
 
@@ -186,6 +190,8 @@ export function filterLinesWithContextToNewDocument(textEditor: vscode.TextEdito
     const selectedText = Lines.textOfLineSelectionOrWordAtCursor(textEditor.document, selection);
     // If we have multiple lines selected, use that as source to filter, else the entire document
     const range = selection.isSingleLine ? Region.makeRangeDocument(textEditor.document) : selection;
+
+    const editorName = originName(textEditor)
 
     const regexOption        = View.makeOption({label: 'Filter', description: 'specify filter to select lines', value: selectedText, input: {prompt: 'Enter regex or [space] + literal', placeHolder:'abc.*'}})
     const surroundOption     = View.makeOption({label: 'Surrounding Lines', description: 'add nearby lines', input:{prompt:'[# lines] [optional regex]', placeHolder:'2 abc.*'}})
@@ -224,7 +230,7 @@ export function filterLinesWithContextToNewDocument(textEditor: vscode.TextEdito
         }
         
         //console.log('changed', item?item.label:'', action, (new Date().getMilliseconds()) - startTime)
-        openShowDocumentWithLines(textEditor, filteredLines)        
+        openShowDocumentWithLines(editorName, filteredLines)        
     })
 }
 
@@ -252,11 +258,11 @@ function addContextLines(textEditor: vscode.TextEditor, line:vscode.TextLine, op
     return addedContextLines
 }
 
-function openShowDocumentWithLines(textEditor: vscode.TextEditor, filteredLines:vscode.TextLine[]) {
+function openShowDocumentWithLines(editorName: string, filteredLines:vscode.TextLine[]) {
     let content = ''
     if (filteredLines.length)
         content = filteredLines.map(line => line.text).reduce((prev, curr) => prev + "\n" + curr);
-    return View.openShowDocument(originName(textEditor), content)
+    return View.openShowDocument(editorName, content)
         .then(editor => {
             if (filteredLines.length < 1000) {
                 const decorations = filteredLines.map((line, index) => View.createGutterDecorator(index, ': ' + (line.lineNumber + 1), '50px'));

@@ -2,7 +2,7 @@
     "name": "transformer",
     "displayName": "Transformer",
     "description": "Filter, Sort, Unique, Reverse, Align, CSV, Line Selection and more text Transformations",
-    "version": "1.12.0",
+    "version": "1.12.1",
     "icon": "transformer-icon.png",
     "repository": {
         "type": "git",
