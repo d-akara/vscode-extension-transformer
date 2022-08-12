@@ -1,6 +1,7 @@
 'use strict';
 import * as vscode from 'vscode';
 import * as transforms from './Transforms';
+import Alignment from './Alignment';
 import {Modify, View, Application} from 'vscode-extension-common'
 /**
  * TODO - planned features:
@@ -34,7 +35,23 @@ interface LinkedDocument {
 } 
 
 export function activate(context: vscode.ExtensionContext) {
+    const alignment = new Alignment();
     let disposable;
+
+    disposable = vscode.commands.registerCommand('dakara-transformer.alignAll', () => {
+        // The code you place here will be executed every time your command is executed
+        alignment.align();
+    });
+
+    disposable = vscode.commands.registerCommand('dakara-transformer.alignFirst', () => {
+        // The code you place here will be executed every time your command is executed
+        alignment.align(true);
+    });
+
+    disposable = vscode.commands.registerCommand('dakara-transformer.alignWhitespace', () => {
+        // The code you place here will be executed every time your command is executed
+        alignment.alignWhitespace();
+    });
 
     disposable = vscode.commands.registerCommand('dakara-transformer.sortLines', () => {
         const textEditor = vscode.window.activeTextEditor;

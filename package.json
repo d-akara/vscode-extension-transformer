@@ -20,6 +20,9 @@
         "onCommand:dakara-transformer.JsonAsText",
         "onCommand:dakara-transformer.alignCSV",
         "onCommand:dakara-transformer.alignCursor",
+        "onCommand:dakara-transformer.alignAll",
+        "onCommand:dakara-transformer.alignWhitespace",
+        "onCommand:dakara-transformer.alignFirst",
         "onCommand:dakara-transformer.commands",
         "onCommand:dakara-transformer.compactCSV",
         "onCommand:dakara-transformer.copyToNewDocument",
@@ -96,6 +99,21 @@
             {
                 "command": "dakara-transformer.alignCursor",
                 "title": "Align To Cursor",
+                "category": "Transform"
+            },
+            {
+                "command": "dakara-transformer.alignAll",
+                "title": "Align To All Chars",
+                "category": "Transform"
+            },
+            {
+                "command": "dakara-transformer.alignFirst",
+                "title": "Align To First Char",
+                "category": "Transform"
+            },
+            {
+                "command": "dakara-transformer.alignWhitespace",
+                "title": "Align To Whitespace",
                 "category": "Transform"
             },
             {
@@ -224,14 +242,122 @@
                 "category": "Transform"
             }
         ],
+        "configuration": {
+            "type": "object",
+            "title": "Alignment configuration",
+            "properties": {
+                "transformer.alignChars": {
+                    "type": "object",
+                    "default": {
+                        ":": {
+                            "spaceBefore": 0,
+                            "spaceAfter": 1
+                        },
+                        "::": {
+                            "spaceBefore": 0,
+                            "spaceAfter": 0
+                        },
+                        "=": {
+                            "spaceBefore": 1,
+                            "spaceAfter": 1
+                        },
+                        "===": {
+                            "spaceBefore": 1,
+                            "spaceAfter": 1
+                        },
+                        "==": {
+                            "spaceBefore": 1,
+                            "spaceAfter": 1
+                        },
+                        "=>": {
+                            "spaceBefore": 1,
+                            "spaceAfter": 1
+                        },
+                        "+=": {
+                            "spaceBefore": 1,
+                            "spaceAfter": 1
+                        },
+                        "-=": {
+                            "spaceBefore": 1,
+                            "spaceAfter": 1
+                        },
+                        "*=": {
+                            "spaceBefore": 1,
+                            "spaceAfter": 1
+                        },
+                        "/=": {
+                            "spaceBefore": 1,
+                            "spaceAfter": 1
+                        }
+                    },
+                    "description": "Chars to align",
+                    "additionalProperties": {
+                        "type": "object",
+                        "properties": {
+                            "spaceBefore": {
+                                "type": "number",
+                                "default": 0
+                            },
+                            "spaceAfter": {
+                                "type": "number",
+                                "default": 1
+                            },
+                            "tabsBefore": {
+                                "type": "number",
+                                "default": 1
+                            },
+                            "tabsAfter": {
+                                "type": "number",
+                                "default": 1
+                            }
+                        },
+                        "additionalProperties": false
+                    }
+                }
+            }
+        },
         "menus": {
             "commandPalette": [
                 {
                     "command": "dakara-internal.command",
                     "when": "false"
                 }
+            ],
+            "editor/context": [
+                {
+                    "when": "editorHasSelection",
+                    "command": "dakara-transformer.alignAll",
+                    "group": "1_modification"
+                },
+                {
+                    "when": "editorHasSelection",
+                    "command": "dakara-transformer.alignFirst",
+                    "group": "1_modification"
+                },
+                {
+                    "when": "editorHasSelection",
+                    "command": "dakara-transformer.alignWhitespace",
+                    "group": "1_modification"
+                }
             ]
         },
+        "keybindings": [
+            {
+                "command": "dakara-transformer.alignAll",
+                "key": "alt+=",
+                "when": "editorHasSelection"
+            },
+            {
+                "command": "dakara-transformer.alignFirst",
+                "key": "alt+shift+=",
+                "when": "editorHasSelection"
+            },
+            {
+                "command": "dakara-transformer.alignWhitespace",
+                "key": "alt+-",
+                "when": "editorHasSelection"
+            }
+        ],
         "languages": [
             {
                 "id": "macro",
